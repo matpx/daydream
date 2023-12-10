@@ -21,12 +21,12 @@ pub fn build(b: *std.Build) void {
         exe.linkSystemLibraryName("X11");
         exe.linkSystemLibraryName("Xi");
         exe.linkSystemLibraryName("Xcursor");
-    } else {
+    } else if (exe.target.getOsTag() == .wasi) {
         exe.defineCMacro("__EMSCRIPTEN__", "1");
     }
 
-    exe.addIncludePath(std.Build.LazyPath { .path = "subprojects/sokol" });
-    exe.addCSourceFile(.{ .file = .{ .path = "src/main.cpp" }, .flags = &.{}});
+    // exe.addIncludePath(std.Build.LazyPath{ .path = "subprojects/sokol" });
+    exe.addCSourceFile(.{ .file = .{ .path = "src/main.cpp" }, .flags = &.{} });
 
     b.installArtifact(exe);
 }
