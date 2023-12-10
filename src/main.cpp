@@ -1,9 +1,9 @@
 #define SOKOL_APP_IMPL
 #define SOKOL_LOG_IMPL
 #define SOKOL_GLCORE33
-#include <sokol_app.h>
-#include <sokol_glue.h>
-#include <sokol_log.h>
+#include "thirdparty/sokol/sokol_app.h"
+#include "thirdparty/sokol/sokol_glue.h"
+#include "thirdparty/sokol/sokol_log.h"
 
 void init() {}
 
