@@ -1,6 +1,7 @@
 #define SOKOL_APP_IMPL
 #define SOKOL_LOG_IMPL
 #define SOKOL_GLCORE33
+// #define SOKOL_GLES3
 #include "thirdparty/sokol/sokol_app.h"
 #include "thirdparty/sokol/sokol_glue.h"
 #include "thirdparty/sokol/sokol_log.h"
