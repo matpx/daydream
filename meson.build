@@ -1,3 +1,3 @@
-project('daydream', 'cpp')
+project('daydream', 'c', 'cpp')
 
 subdir('src')
