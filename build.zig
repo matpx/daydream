@@ -16,7 +16,6 @@ pub fn build(b: *std.Build) void {
         exe.linkSystemLibraryName("X11");
         exe.linkSystemLibraryName("Xi");
         exe.linkSystemLibraryName("Xcursor");
-        exe.linkSystemLibraryName("GL");
     }
 
     exe.addIncludePath(std.Build.LazyPath { .path = "subprojects/sokol" });
