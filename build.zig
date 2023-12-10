@@ -67,8 +67,12 @@ pub fn build(b: *std.Build) void {
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/" });
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/fmt/include/" });
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/GSL/include/" });
-    exe.addCSourceFile(.{
-        .file = .{ .path = "src/main.cpp" },
+    exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/expected/include/" });
+    exe.addCSourceFiles(.{
+        .files = &.{
+            "src/main.cpp",
+            "src/impl.c",
+        },
         .flags = if (optimize == std.builtin.OptimizeMode.Debug) debug_options else release_options,
     });
 

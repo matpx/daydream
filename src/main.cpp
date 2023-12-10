@@ -1,9 +1,4 @@
-#define SOKOL_APP_IMPL
-#define SOKOL_LOG_IMPL
-#define SOKOL_GLCORE33
-// #define SOKOL_GLES3
 #include "sokol/sokol_app.h"
-#include "sokol/sokol_glue.h"
 #include "sokol/sokol_log.h"
 
 #include "engine.hpp"
@@ -23,7 +18,6 @@ void event(const sapp_event *event) {
 
 sapp_desc sokol_main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
   DD_LOG_DEBUG("DEBUG MODE!");
-
 
   return {
       .init_cb = init,
