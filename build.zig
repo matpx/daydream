@@ -24,6 +24,8 @@ pub fn build(b: *std.Build) void {
         exe.linkSystemLibraryName("X11");
         exe.linkSystemLibraryName("Xi");
         exe.linkSystemLibraryName("Xcursor");
+        // exe.addSystemIncludePath(std.Build.LazyPath{ .path = "/usr/include" });
+        // exe.addLibraryPath(std.Build.LazyPath{ .path = "/usr/lib64" });
     }
 
     const common_options: []const []const u8 = &.{
@@ -54,12 +56,12 @@ pub fn build(b: *std.Build) void {
 
     const debug_options: []const []const u8 = common_options ++ .{
         "-O1",
-        "-D_GLIBCXX_DEBUG",
-        "-D_GLIBCXX_DEBUG_PEDANTIC",
+        // "-D_GLIBCXX_DEBUG",
+        // "-D_GLIBCXX_DEBUG_PEDANTIC",
     };
 
     const release_options: []const []const u8 = common_options ++ .{
-        "-D_GLIBCXX_ASSERTIONS",
+        // "-D_GLIBCXX_ASSERTIONS",
     };
 
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/" });
