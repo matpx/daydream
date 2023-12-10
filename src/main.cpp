@@ -22,8 +22,8 @@ void event(const sapp_event *event) {
 }
 
 sapp_desc sokol_main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
-
   DD_LOG_DEBUG("DEBUG MODE!");
+
 
   return {
       .init_cb = init,
