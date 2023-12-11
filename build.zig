@@ -13,10 +13,10 @@ pub fn build(b: *std.Build) void {
     exe.linkLibC();
     exe.linkLibCpp();
 
-    var shaderc: []const u8 = ".\\toolchain\\sokol-tools-bin\\bin\\linux\\sokol-shdc";
+    var shaderc: []const u8 = "./toolchain/sokol-tools-bin/bin/linux/sokol-shdc";
 
     if (exe.target.isWindows()) {
-        shaderc = ".\\toolchain\\sokol-tools-bin\\bin\\win32\\sokol-shdc.exe";
+        shaderc = "./toolchain/sokol-tools-bin/bin/win32/sokol-shdc.exe";
 
         exe.linkSystemLibraryName("kernel32");
         exe.linkSystemLibraryName("user32");
@@ -83,7 +83,7 @@ pub fn build(b: *std.Build) void {
         if (optimize == std.builtin.OptimizeMode.Debug) debug_options else release_options,
     );
 
-    exe.step.dependOn(&b.addSystemCommand(&.{ ".\\toolchain\\sokol-tools-bin\\bin\\win32\\sokol-shdc.exe", "--input=shader\\unlit.glsl", "--output=shader\\include\\shader\\unlit.h", "--slang=glsl330" }).step);
+    exe.step.dependOn(&b.addSystemCommand(&.{ shaderc, "--input=shader/unlit.glsl", "--output=shader/include/shader/unlit.h", "--slang=glsl330" }).step);
 
     b.installArtifact(exe);
 }
