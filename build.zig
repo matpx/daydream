@@ -73,6 +73,7 @@ pub fn build(b: *std.Build) void {
         &.{
             "src/main.cpp",
             "src/impl.c",
+            "src/renderer.cpp",
         },
         if (optimize == std.builtin.OptimizeMode.Debug) debug_options else release_options,
     );

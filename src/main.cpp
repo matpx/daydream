@@ -2,12 +2,27 @@
 #include "sokol_log.h"
 
 #include "log.hpp"
+#include "renderer.hpp"
+#include <gsl/pointers>
 
-void init() {}
+namespace dd {
+
+class App : NoCopy {
+public:
+  gsl::not_null<std::unique_ptr<Renderer>> renderer;
+
+  App() : renderer(std::make_unique<Renderer>()){};
+};
+
+} // namespace dd
+
+static std::unique_ptr<dd::App> app;
+
+void init() { app = std::make_unique<dd::App>(); }
 
 void frame() {}
 
-void cleanup() {}
+void cleanup() { app = nullptr; }
 
 void event(const sapp_event *event) {
   if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&
