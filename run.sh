@@ -2,5 +2,5 @@
 
 set -e
 
-./toolchain/zig-linux-x86_64/zig build
+./toolchain/zig/zig build
 ./zig-out/bin/daydream

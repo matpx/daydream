@@ -43,7 +43,7 @@ pub fn build(b: *std.Build) void {
         "-Wcast-align",
         "-Wnewline-eof",
         "-fstrict-flex-arrays=3",
-        "-fstack-clash-protection",
+        // "-fstack-clash-protection",
         "-fstack-protector-strong",
         // "-Wl,-z,nodlopen",
         // "-Wl,-z,noexecstack",
@@ -69,13 +69,13 @@ pub fn build(b: *std.Build) void {
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/fmt/include/" });
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/GSL/include/" });
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/expected/include/" });
-    exe.addCSourceFiles(.{
-        .files = &.{
+    exe.addCSourceFiles(
+        &.{
             "src/main.cpp",
             "src/impl.c",
         },
-        .flags = if (optimize == std.builtin.OptimizeMode.Debug) debug_options else release_options,
-    });
+        if (optimize == std.builtin.OptimizeMode.Debug) debug_options else release_options,
+    );
 
     b.installArtifact(exe);
 }
