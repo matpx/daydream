@@ -43,8 +43,6 @@ pub fn build(b: *std.Build) void {
         // "-Wduplicated-cond",
         "-Wcast-qual",
         "-Wcast-align",
-        "-U_FORTIFY_SOURCE",
-        "-D_FORTIFY_SOURCE=3",
         "-fstrict-flex-arrays=3",
         // "-fstack-clash-protection",
         "-fstack-protector-strong",
@@ -55,13 +53,15 @@ pub fn build(b: *std.Build) void {
     };
 
     const debug_options: []const []const u8 = common_options ++ .{
-        "-O1",
+        // "-O1",
         // "-D_GLIBCXX_DEBUG",
         // "-D_GLIBCXX_DEBUG_PEDANTIC",
     };
 
     const release_options: []const []const u8 = common_options ++ .{
         // "-D_GLIBCXX_ASSERTIONS",
+        "-U_FORTIFY_SOURCE",
+        "-D_FORTIFY_SOURCE=3",
     };
 
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/sokol/" });
