@@ -2,19 +2,8 @@
 #include "sokol_log.h"
 
 #include "log.hpp"
+#include "app.hpp"
 #include "renderer.hpp"
-#include <gsl/pointers>
-
-namespace dd {
-
-class App : NoCopy {
-public:
-  gsl::not_null<std::unique_ptr<Renderer>> renderer;
-
-  App() : renderer(std::make_unique<Renderer>()){};
-};
-
-} // namespace dd
 
 static std::unique_ptr<dd::App> app;
 
