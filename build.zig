@@ -65,6 +65,8 @@ pub fn build(b: *std.Build) void {
     };
 
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/sokol/" });
+    exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/glm/" });
+    exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/entt/single_include/" });
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/fmt/include/" });
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/GSL/include/" });
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/expected/include/" });
