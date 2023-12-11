@@ -13,7 +13,11 @@ pub fn build(b: *std.Build) void {
     exe.linkLibC();
     exe.linkLibCpp();
 
+    var shaderc: []const u8 = ".\\toolchain\\sokol-tools-bin\\bin\\linux\\sokol-shdc";
+
     if (exe.target.isWindows()) {
+        shaderc = ".\\toolchain\\sokol-tools-bin\\bin\\win32\\sokol-shdc.exe";
+
         exe.linkSystemLibraryName("kernel32");
         exe.linkSystemLibraryName("user32");
         exe.linkSystemLibraryName("gdi32");
