@@ -53,12 +53,11 @@ pub fn build(b: *std.Build) void {
 
     const debug_options: []const []const u8 = common_options ++ .{
         // "-O1",
-        // "-D_GLIBCXX_DEBUG",
-        // "-D_GLIBCXX_DEBUG_PEDANTIC",
+        "-D_LIBCPP_ENABLE_DEBUG_MODE",
     };
 
     const release_options: []const []const u8 = common_options ++ .{
-        // "-D_GLIBCXX_ASSERTIONS",
+        "-D_LIBCPP_ENABLE_ASSERTIONS",
         "-U_FORTIFY_SOURCE",
         "-D_FORTIFY_SOURCE=3",
     };
