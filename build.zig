@@ -64,7 +64,7 @@ pub fn build(b: *std.Build) void {
         // "-D_GLIBCXX_ASSERTIONS",
     };
 
-    exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/" });
+    exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/sokol/" });
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/fmt/include/" });
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/GSL/include/" });
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/expected/include/" });

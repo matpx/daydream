@@ -1,6 +1,6 @@
 {
   "clangd.fallbackFlags": [
-    "-I${workspaceFolder}/thirdparty/",
+    "-I${workspaceFolder}/thirdparty/sokol/",
     "-I${workspaceFolder}/thirdparty/fmt/include/",
     "-I${workspaceFolder}/thirdparty/GSL/include/",
     "-I${workspaceFolder}/thirdparty/expected/include/",
