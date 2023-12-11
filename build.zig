@@ -4,8 +4,6 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const shaderc = b.addSystemCommand(&.{ ".\\toolchain\\sokol-tools-bin\\bin\\win32\\sokol-shdc.exe", "--input=shader\\unlit.glsl", "--output=shader\\include\\shader\\unlit.h", "--slang=glsl330" });
-
     const exe = b.addExecutable(.{
         .name = "daydream",
         .target = target,
@@ -80,7 +78,8 @@ pub fn build(b: *std.Build) void {
         },
         if (optimize == std.builtin.OptimizeMode.Debug) debug_options else release_options,
     );
-    exe.step.dependOn(&shaderc.step);
+
+    exe.step.dependOn(&b.addSystemCommand(&.{ ".\\toolchain\\sokol-tools-bin\\bin\\win32\\sokol-shdc.exe", "--input=shader\\unlit.glsl", "--output=shader\\include\\shader\\unlit.h", "--slang=glsl330" }).step);
 
     b.installArtifact(exe);
 }
