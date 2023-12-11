@@ -1,26 +1,26 @@
 const std = @import("std");
 
-const ShaderPair = struct {
-    infile: []const u8,
-    outfile: []const u8,
+const shaders: []const []const u8 = &.{
+    "unlit",
 };
 
-const shaders = [_]ShaderPair{.{
-    .infile = "shader/unlit.glsl",
-    .outfile = "shader/include/shader/unlit.h",
-}};
+const indir = "shader/";
+const outdir = "shader/include/shader/";
 
-fn shader_needs_update(shader_pair: ShaderPair) !bool {
-    const infile = try std.fs.cwd().openFile(shader_pair.infile, .{});
-    const outfile = std.fs.cwd().openFile(shader_pair.outfile, .{}) catch return true;
+fn shader_needs_update(shader: []const u8) !bool {
+    var infile_buffer = [_]u8{undefined} ** 100;
+    const infile_path = try std.fmt.bufPrint(&infile_buffer, indir ++ "{s}.glsl", .{shader});
+
+    var outfile_buffer = [_]u8{undefined} ** 100;
+    const outfile_path = try std.fmt.bufPrint(&outfile_buffer, outdir ++ "{s}.h", .{shader});
+
+    const infile = try std.fs.cwd().openFile(infile_path, .{});
+    const outfile = std.fs.cwd().openFile(outfile_path, .{}) catch return true;
 
     return (try infile.metadata()).accessed() > (try outfile.metadata()).accessed();
 }
 
 pub fn build(b: *std.Build) !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -106,11 +106,11 @@ pub fn build(b: *std.Build) !void {
 
     for (shaders) |shader| {
         if (try shader_needs_update(shader)) {
-            const infile_arg = try std.fmt.allocPrint(allocator, "--input={s}", .{shader.infile});
-            defer allocator.free(infile_arg);
+            var infile_buffer = [_]u8{undefined} ** 100;
+            const infile_arg = try std.fmt.bufPrint(&infile_buffer, "--input=" ++ indir ++ "{s}.glsl", .{shader});
 
-            const outfile_arg = try std.fmt.allocPrint(allocator, "--output={s}", .{shader.outfile});
-            defer allocator.free(outfile_arg);
+            var outfile_buffer = [_]u8{undefined} ** 100;
+            const outfile_arg = try std.fmt.bufPrint(&outfile_buffer, "--output=" ++ outdir ++ "{s}.h", .{shader});
 
             exe.step.dependOn(&b.addSystemCommand(&.{ shaderc, infile_arg, outfile_arg, "--slang=glsl330" }).step);
         }
