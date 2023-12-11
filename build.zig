@@ -41,6 +41,7 @@ pub fn build(b: *std.Build) void {
         "-Wshift-overflow",
         "-Wcast-qual",
         "-Wcast-align",
+        "-Wnewline-eof",
         "-fstrict-flex-arrays=3",
         "-fstack-clash-protection",
         "-fstack-protector-strong",
