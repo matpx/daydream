@@ -1,6 +1,26 @@
 const std = @import("std");
 
-pub fn build(b: *std.Build) void {
+const ShaderPair = struct {
+    infile: []const u8,
+    outfile: []const u8,
+};
+
+const shaders = [_]ShaderPair{.{
+    .infile = "shader/unlit.glsl",
+    .outfile = "shader/include/shader/unlit.h",
+}};
+
+fn shader_needs_update(shader_pair: ShaderPair) !bool {
+    const infile = try std.fs.cwd().openFile(shader_pair.infile, .{});
+    const outfile = std.fs.cwd().openFile(shader_pair.outfile, .{}) catch return true;
+
+    return (try infile.metadata()).accessed() > (try outfile.metadata()).accessed();
+}
+
+pub fn build(b: *std.Build) !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -84,7 +104,17 @@ pub fn build(b: *std.Build) void {
         if (optimize == std.builtin.OptimizeMode.Debug) debug_options else release_options,
     );
 
-    exe.step.dependOn(&b.addSystemCommand(&.{ shaderc, "--input=shader/unlit.glsl", "--output=shader/include/shader/unlit.h", "--slang=glsl330" }).step);
+    for (shaders) |shader| {
+        if (try shader_needs_update(shader)) {
+            const infile_arg = try std.fmt.allocPrint(allocator, "--input={s}", .{shader.infile});
+            defer allocator.free(infile_arg);
+
+            const outfile_arg = try std.fmt.allocPrint(allocator, "--output={s}", .{shader.outfile});
+            defer allocator.free(outfile_arg);
+
+            exe.step.dependOn(&b.addSystemCommand(&.{ shaderc, infile_arg, outfile_arg, "--slang=glsl330" }).step);
+        }
+    }
 
     b.installArtifact(exe);
 }
