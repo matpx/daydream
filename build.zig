@@ -62,24 +62,14 @@ pub fn build(b: *std.Build) !void {
         "-Wno-c++98-compat-pedantic",
         "-Wno-c++98-compat",
         "-fstrict-flex-arrays=3",
-        // "-fstack-clash-protection", // TODO Windows?
-        // "-fstack-protector-strong", // TODO Windows?
-        // "-Wl,-z,nodlopen",
-        // "-Wl,-z,noexecstack",
-        // "-Wl,-z,relro",
-        // "-Wl,-z,now",
-        "-Wa,--noexecstack",
     };
 
     const debug_options: []const []const u8 = common_options ++ .{
-        // "-O1",
         "-D_LIBCPP_ENABLE_DEBUG_MODE",
     };
 
     const release_options: []const []const u8 = common_options ++ .{
         "-D_LIBCPP_ENABLE_ASSERTIONS",
-        // "-U_FORTIFY_SOURCE",
-        // "-D_FORTIFY_SOURCE=3",
     };
 
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/sokol/" });
