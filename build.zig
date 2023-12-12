@@ -78,8 +78,8 @@ pub fn build(b: *std.Build) !void {
 
     const release_options: []const []const u8 = common_options ++ .{
         "-D_LIBCPP_ENABLE_ASSERTIONS",
-        "-U_FORTIFY_SOURCE",
-        "-D_FORTIFY_SOURCE=3",
+        // "-U_FORTIFY_SOURCE",
+        // "-D_FORTIFY_SOURCE=3",
     };
 
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/sokol/" });
