@@ -4,7 +4,7 @@
 
 namespace dd {
 
-class Renderer : NoCopy {
+class Renderer final : NoCopy {
 public:
   Renderer();
   ~Renderer();

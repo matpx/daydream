@@ -7,7 +7,7 @@ namespace dd {
 
 class Renderer;
 
-class App : NoCopy {
+class App final : NoCopy {
 public:
   gsl::not_null<std::unique_ptr<Renderer>> renderer;
 
