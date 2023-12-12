@@ -1,15 +1,20 @@
 #include "sokol_app.h"
 #include "sokol_log.h"
 
-#include "log.hpp"
 #include "app.hpp"
+#include "log.hpp"
 #include "renderer.hpp"
+
 
 static std::unique_ptr<dd::App> app;
 
 void init() { app = std::make_unique<dd::App>(); }
 
-void frame() {}
+void frame() {
+  app->renderer->begin_frame();
+
+  app->renderer->end_fram();
+}
 
 void cleanup() { app = nullptr; }
 

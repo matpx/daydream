@@ -6,7 +6,11 @@ namespace dd {
 
 class Renderer : NoCopy {
 public:
-  Renderer() = default;
+  Renderer();
+  ~Renderer();
+
+  void begin_frame();
+  void end_fram();
 };
 
 } // namespace dd
