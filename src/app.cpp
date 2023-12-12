@@ -3,6 +3,8 @@
 
 namespace dd {
 
-App::App() : renderer(std::make_unique<Renderer>()){};
+App::App()
+    : renderer(std::make_unique<Renderer>()),
+      world(std::make_unique<World>()){};
 
 }
