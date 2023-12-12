@@ -5,10 +5,9 @@
 #include "log.hpp"
 #include "renderer.hpp"
 
+static dd::App *app = nullptr;
 
-static std::unique_ptr<dd::App> app;
-
-void init() { app = std::make_unique<dd::App>(); }
+void init() { app = new dd::App(); }
 
 void frame() {
   app->renderer->begin_frame();
@@ -16,7 +15,7 @@ void frame() {
   app->renderer->end_fram();
 }
 
-void cleanup() { app = nullptr; }
+void cleanup() { delete app; }
 
 void event(const sapp_event *event) {
   if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&
