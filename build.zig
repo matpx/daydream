@@ -32,6 +32,7 @@ pub fn build(b: *std.Build) !void {
 
     exe.linkLibC();
     exe.linkLibCpp();
+    exe.want_lto = false; // TODO: https://github.com/ziglang/zig/issues/15958
 
     const shaderc: []const u8 = if (exe.target.isWindows())
         "./toolchain/sokol-tools-bin/bin/win32/sokol-shdc.exe"
@@ -60,14 +61,14 @@ pub fn build(b: *std.Build) !void {
         "-Wno-missing-prototypes",
         "-Wno-c++98-compat-pedantic",
         "-Wno-c++98-compat",
-        "-fstrict-flex-arrays=3",
+        // "-fstrict-flex-arrays=3",
         // "-fstack-clash-protection",
-        "-fstack-protector-strong",
+        // "-fstack-protector-strong",
         // "-Wl,-z,nodlopen",
         // "-Wl,-z,noexecstack",
         // "-Wl,-z,relro",
         // "-Wl,-z,now",
-        "-Wa,--noexecstack",
+        // "-Wa,--noexecstack",
     };
 
     const debug_options: []const []const u8 = common_options ++ .{
@@ -77,8 +78,8 @@ pub fn build(b: *std.Build) !void {
 
     const release_options: []const []const u8 = common_options ++ .{
         "-D_LIBCPP_ENABLE_ASSERTIONS",
-        "-U_FORTIFY_SOURCE",
-        "-D_FORTIFY_SOURCE=3",
+        // "-U_FORTIFY_SOURCE",
+        // "-D_FORTIFY_SOURCE=3",
     };
 
     exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/sokol/" });

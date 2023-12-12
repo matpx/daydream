@@ -3,9 +3,27 @@
 #define FMT_HEADER_ONLY
 #include <fmt/core.h>
 
-#ifndef NDEBUG
-#define DD_LOG_DEBUG(...) fmt::print(__VA_ARGS__); fmt::print("\n");
-#else
-#define DD_LOG_DEBUG(...)
+namespace dd {
+
+enum class LogServerity { DEBUG, INFO };
+
+template <typename... T>
+constexpr void log(const LogServerity severity, fmt::format_string<T...> fmt,
+                   T &&...args) {
+  switch (severity) {
+  case LogServerity::DEBUG:
+#ifdef NDEBUG
+    return;
 #endif
-#define DD_LOG_INFO(...) fmt::print(__VA_ARGS__); fmt::print("\n");
+    fmt::print("DEBUG: ");
+    break;
+  case LogServerity::INFO:
+    fmt::print("INFO: ");
+    break;
+  }
+
+  fmt::print(fmt, args...);
+  fmt::print("\n");
+}
+
+} // namespace dd

@@ -5,9 +5,14 @@
 #include "log.hpp"
 #include "renderer.hpp"
 
-static dd::App *app = nullptr;
+namespace dd {
 
-void init() { app = new dd::App(); }
+static App *app = nullptr;
+
+void init() {
+  log(LogServerity::DEBUG, "Debug Mode!");
+  app = new App();
+}
 
 void frame() {
   app->renderer->begin_frame();
@@ -24,14 +29,15 @@ void event(const sapp_event *event) {
   }
 }
 
+} // namespace dd
+
 sapp_desc sokol_main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
-  DD_LOG_DEBUG("DEBUG MODE!")
 
   return {
-      .init_cb = init,
-      .frame_cb = frame,
-      .cleanup_cb = cleanup,
-      .event_cb = event,
+      .init_cb = dd::init,
+      .frame_cb = dd::frame,
+      .cleanup_cb = dd::cleanup,
+      .event_cb = dd::event,
       .width = 1200,
       .height = 800,
       .window_title = "daydream",
