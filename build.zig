@@ -54,6 +54,7 @@ pub fn build(b: *std.Build) !void {
     }
 
     const common_options: []const []const u8 = &.{
+        "-std=c++20",
         "-Werror",
         "-Wall",
         "-Wextra",
@@ -97,7 +98,7 @@ pub fn build(b: *std.Build) !void {
     exe.addCSourceFiles(
         &.{
             "src/main.cpp",
-            "src/impl.c",
+            "src/impl.cpp",
             "src/app.cpp",
             "src/renderer.cpp",
         },
