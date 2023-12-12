@@ -50,6 +50,7 @@ pub fn build(b: *std.Build) !void {
         exe.linkSystemLibraryName("X11");
         exe.linkSystemLibraryName("Xi");
         exe.linkSystemLibraryName("Xcursor");
+        exe.linkSystemLibraryName("GL");
         // exe.addSystemIncludePath(std.Build.LazyPath{ .path = "/usr/include" });
         // exe.addLibraryPath(std.Build.LazyPath{ .path = "/usr/lib64" });
     }
