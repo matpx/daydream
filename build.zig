@@ -51,11 +51,15 @@ pub fn build(b: *std.Build) !void {
         exe.linkSystemLibraryName("Xi");
         exe.linkSystemLibraryName("Xcursor");
         exe.linkSystemLibraryName("GL");
-        // exe.addSystemIncludePath(std.Build.LazyPath{ .path = "/usr/include" });
-        // exe.addLibraryPath(std.Build.LazyPath{ .path = "/usr/lib64" });
     }
 
-    const common_options: []const []const u8 = &.{
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+
+    var compiler_args = std.ArrayList([]const u8).init(allocator);
+    defer compiler_args.deinit();
+
+    try compiler_args.appendSlice(&.{
         "-std=c++20",
         "-Werror",
         "-Weverything",
@@ -63,30 +67,37 @@ pub fn build(b: *std.Build) !void {
         "-Wno-c++98-compat-pedantic",
         "-Wno-c++98-compat",
         "-fstrict-flex-arrays=3",
+    });
+
+    if (optimize == std.builtin.OptimizeMode.Debug) {
+        try compiler_args.append("-D_LIBCPP_ENABLE_DEBUG_MODE");
+    } else {
+        try compiler_args.append("-D_LIBCPP_ENABLE_ASSERTIONS");
+    }
+
+    const system_include_paths: []const []const u8 = &.{
+        "thirdparty/sokol/",
+        "thirdparty/glm/",
+        "thirdparty/entt/src/",
+        "thirdparty/fmt/include/",
+        "thirdparty/GSL/include/",
+        "thirdparty/expected/include/",
     };
 
-    const debug_options: []const []const u8 = common_options ++ .{
-        "-D_LIBCPP_ENABLE_DEBUG_MODE",
+    for (system_include_paths) |include_path| {
+        exe.addSystemIncludePath(std.Build.LazyPath{ .path = include_path });
+    }
+
+    const source_files: []const []const u8 = &.{
+        "src/main.cpp",
+        "src/impl.cpp",
+        "src/app.cpp",
+        "src/renderer.cpp",
     };
 
-    const release_options: []const []const u8 = common_options ++ .{
-        "-D_LIBCPP_ENABLE_ASSERTIONS",
-    };
-
-    exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/sokol/" });
-    exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/glm/" });
-    exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/entt/src/" });
-    exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/fmt/include/" });
-    exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/GSL/include/" });
-    exe.addSystemIncludePath(std.Build.LazyPath{ .path = "thirdparty/expected/include/" });
     exe.addCSourceFiles(
-        &.{
-            "src/main.cpp",
-            "src/impl.cpp",
-            "src/app.cpp",
-            "src/renderer.cpp",
-        },
-        if (optimize == std.builtin.OptimizeMode.Debug) debug_options else release_options,
+        source_files,
+        compiler_args.items,
     );
 
     for (shaders) |shader| {
