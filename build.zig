@@ -44,6 +44,10 @@ pub fn build(b: *std.Build) !void {
             "-Wno-c++98-compat-pedantic",
             "-Wno-c++98-compat",
             "-fstrict-flex-arrays=3",
+            "-ftrivial-auto-var-init=zero",
+            "-fcf-protection=full",
+            // "-fstack-clash-protection",
+            "-fPIE",
         };
 
         const compiler_args: []const []const u8 =
