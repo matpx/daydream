@@ -3,24 +3,25 @@
 
 #include "app.hpp"
 #include "log.hpp"
+
 #include "renderer.hpp"
+#include "loader.hpp"
+#include "world.hpp"
 
 namespace dd {
 
-static App *app = nullptr;
-
 void init() {
   log(LogServerity::DEBUG, "Debug Mode!");
-  app = new App();
+  APP = new App();
 }
 
 void frame() {
-  app->renderer->begin_frame();
+  APP->renderer->begin_frame();
 
-  app->renderer->end_fram();
+  APP->renderer->end_fram();
 }
 
-void cleanup() { delete app; }
+void cleanup() { delete APP; }
 
 void event(const sapp_event *event) {
   if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&

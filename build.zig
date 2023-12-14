@@ -1,15 +1,6 @@
 const std = @import("std");
 
-const shader_indir = "shader/";
-const shader_outdir = "shader/include/shader/";
-
-fn shader_needs_update(shader: []const u8) !bool {
-    var infile_buffer = [_]u8{undefined} ** 100;
-    const infile_path = try std.fmt.bufPrint(&infile_buffer, shader_indir ++ "{s}.glsl", .{shader});
-
-    var outfile_buffer = [_]u8{undefined} ** 100;
-    const outfile_path = try std.fmt.bufPrint(&outfile_buffer, shader_outdir ++ "{s}.h", .{shader});
-
+fn source_pair_needs_update(infile_path: []const u8, outfile_path: []const u8) !bool {
     const infile = try std.fs.cwd().openFile(infile_path, .{});
     const outfile = std.fs.cwd().openFile(outfile_path, .{}) catch return true;
 
@@ -34,6 +25,7 @@ pub fn build(b: *std.Build) !void {
             "thirdparty/fmt/include/",
             "thirdparty/GSL/include/",
             "thirdparty/expected/include/",
+            "thirdparty/cgltf/",
         };
 
         for (system_include_paths) |include_path| {
@@ -44,6 +36,8 @@ pub fn build(b: *std.Build) !void {
     {
         const compiler_args_common: []const []const u8 = &.{
             "-std=c++20",
+            "-fno-exceptions",
+            "-fno-rtti",
             "-Werror",
             "-Weverything",
             "-Wno-missing-prototypes",
@@ -63,6 +57,7 @@ pub fn build(b: *std.Build) !void {
             "src/impl.cpp",
             "src/app.cpp",
             "src/renderer.cpp",
+            "src/loader.cpp",
         };
 
         exe.addCSourceFiles(
@@ -102,12 +97,18 @@ pub fn build(b: *std.Build) !void {
             "unlit",
         };
 
-        for (shaders) |shader| {
-            if (try shader_needs_update(shader)) {
-                var infile_buffer = [_]u8{undefined} ** 100;
-                const infile_arg = try std.fmt.bufPrint(&infile_buffer, "--input=" ++ shader_indir ++ "{s}.glsl", .{shader});
+        const shader_indir = "shader/";
+        const shader_outdir = "shader/include/shader/";
 
-                var outfile_buffer = [_]u8{undefined} ** 100;
+        for (shaders) |shader| {
+            var infile_buffer = [_]u8{undefined} ** 256;
+            var outfile_buffer = [_]u8{undefined} ** 256;
+
+            const infile_path = try std.fmt.bufPrint(&infile_buffer, shader_indir ++ "{s}.glsl", .{shader});
+            const outfile_path = try std.fmt.bufPrint(&outfile_buffer, shader_outdir ++ "{s}.h", .{shader});
+
+            if (try source_pair_needs_update(infile_path, outfile_path)) {
+                const infile_arg = try std.fmt.bufPrint(&infile_buffer, "--input=" ++ shader_indir ++ "{s}.glsl", .{shader});
                 const outfile_arg = try std.fmt.bufPrint(&outfile_buffer, "--output=" ++ shader_outdir ++ "{s}.h", .{shader});
 
                 exe.step.dependOn(&b.addSystemCommand(&.{ shaderc, infile_arg, outfile_arg, "--slang=glsl330" }).step);
@@ -117,7 +118,7 @@ pub fn build(b: *std.Build) !void {
 
     exe.linkLibC();
     exe.linkLibCpp();
-    exe.want_lto = false; // TODO: https://github.com/ziglang/zig/issues/15958
+    // exe.want_lto = false; // TODO: https://github.com/ziglang/zig/issues/15958
 
     b.installArtifact(exe);
 }
