@@ -46,17 +46,17 @@ pub fn build(b: *std.Build) !void {
             "-fstrict-flex-arrays=3",
             "-ftrivial-auto-var-init=zero",
             "-fPIE",
+            "-fcf-protection=full",
+            // "-fstack-clash-protection",
         };
 
         const compiler_args: []const []const u8 =
             if (optimize == std.builtin.OptimizeMode.Debug)
             compiler_args_common ++ .{ "-D_LIBCPP_ENABLE_DEBUG_MODE", "-D_GLIBCXX_DEBUG" }
-        else if (optimize == std.builtin.OptimizeMode.ReleaseSafe or optimize == std.builtin.OptimizeMode.Debug)
+        else if (optimize == std.builtin.OptimizeMode.ReleaseSafe)
             compiler_args_common ++ .{
                 "-D_LIBCPP_ENABLE_ASSERTIONS",
                 "-D_GLIBCXX_ASSERTIONS",
-                "-fcf-protection=full",
-                // "-fstack-clash-protection",
             }
         else
             compiler_args_common;
