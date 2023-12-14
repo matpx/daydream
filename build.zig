@@ -45,16 +45,21 @@ pub fn build(b: *std.Build) !void {
             "-Wno-c++98-compat",
             "-fstrict-flex-arrays=3",
             "-ftrivial-auto-var-init=zero",
-            "-fcf-protection=full",
-            // "-fstack-clash-protection",
             "-fPIE",
         };
 
         const compiler_args: []const []const u8 =
             if (optimize == std.builtin.OptimizeMode.Debug)
             compiler_args_common ++ .{ "-D_LIBCPP_ENABLE_DEBUG_MODE", "-D_GLIBCXX_DEBUG" }
+        else if (optimize == std.builtin.OptimizeMode.ReleaseSafe)
+            compiler_args_common ++ .{
+                "-D_LIBCPP_ENABLE_ASSERTIONS",
+                "-D_GLIBCXX_ASSERTIONS",
+                "-fcf-protection=full",
+                // "-fstack-clash-protection",
+            }
         else
-            compiler_args_common ++ .{ "-D_LIBCPP_ENABLE_ASSERTIONS", "-D_GLIBCXX_ASSERTIONS" };
+            compiler_args_common;
 
         const source_files: []const []const u8 = &.{
             "src/main.cpp",
@@ -122,7 +127,9 @@ pub fn build(b: *std.Build) !void {
 
     exe.linkLibC();
     exe.linkLibCpp();
-    // exe.want_lto = false; // TODO: https://github.com/ziglang/zig/issues/15958
+    exe.pie = true;
+    exe.link_z_relro = true;
+    // exe.want_lto = false; // https://github.com/ziglang/zig/issues/15958
 
     b.installArtifact(exe);
 }
