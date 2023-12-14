@@ -5,15 +5,12 @@
 #include <string>
 #include <tl/expected.hpp>
 
-
 namespace dd {
 
-tl::expected<tl::monostate, std::string>
-parse_prim(const cgltf_primitive &prim) {
+tl::expected<tl::monostate, std::string> parse_prim(const cgltf_primitive &prim) {
     cgltf_attribute pos_attribute = {};
 
-    for (const cgltf_attribute &attribute :
-         std::span<cgltf_attribute>(prim.attributes, prim.attributes_count)) {
+    for (const cgltf_attribute &attribute : std::span<cgltf_attribute>(prim.attributes, prim.attributes_count)) {
         if (attribute.type == cgltf_attribute_type_position) {
             pos_attribute = attribute;
         }
