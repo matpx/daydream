@@ -8,6 +8,7 @@
 #include <locale.h>
 #include <msvcrt.h>
 
+__attribute__((used))
 static void __cdecl init_func(_locale_t locale);
 void (__cdecl *__MINGW_IMP_SYMBOL(_free_locale))(_locale_t) = init_func;
 
