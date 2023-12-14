@@ -2,12 +2,8 @@
 
 #include "nocopy.hpp"
 
-namespace dd
-{
+namespace dd {
 
-  class Loader : NoCopy {
-
-  };
+class Loader : NoCopy {};
 
 } // namespace dd
-

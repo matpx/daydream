@@ -3,9 +3,9 @@
 namespace dd {
 
 class NoCopy {
-public:
-  NoCopy() = default;
-  NoCopy(const NoCopy &) = delete;
+    public:
+        NoCopy() = default;
+        NoCopy(const NoCopy &) = delete;
 };
 
 } // namespace dd

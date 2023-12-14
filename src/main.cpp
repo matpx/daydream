@@ -4,47 +4,47 @@
 #include "app.hpp"
 #include "log.hpp"
 
-#include "renderer.hpp"
 #include "loader.hpp"
+#include "renderer.hpp"
 #include "world.hpp"
 
 namespace dd {
 
 void init() {
-  log(LogServerity::DEBUG, "Debug Mode!");
-  APP = new App();
+    log(LogServerity::DEBUG, "Debug Mode!");
+    APP = new App();
 }
 
 void frame() {
-  APP->renderer->begin_frame();
+    APP->renderer->begin_frame();
 
-  APP->renderer->end_fram();
+    APP->renderer->end_fram();
 }
 
 void cleanup() { delete APP; }
 
 void event(const sapp_event *event) {
-  if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&
-      event->key_code == SAPP_KEYCODE_ESCAPE) {
-    sapp_request_quit();
-  }
+    if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&
+        event->key_code == SAPP_KEYCODE_ESCAPE) {
+        sapp_request_quit();
+    }
 }
 
 } // namespace dd
 
 sapp_desc sokol_main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
 
-  return {
-      .init_cb = dd::init,
-      .frame_cb = dd::frame,
-      .cleanup_cb = dd::cleanup,
-      .event_cb = dd::event,
-      .width = 1200,
-      .height = 800,
-      .window_title = "daydream",
-      .logger =
-          {
-              .func = slog_func,
-          },
-  };
+    return {
+        .init_cb = dd::init,
+        .frame_cb = dd::frame,
+        .cleanup_cb = dd::cleanup,
+        .event_cb = dd::event,
+        .width = 1200,
+        .height = 800,
+        .window_title = "daydream",
+        .logger =
+            {
+                .func = slog_func,
+            },
+    };
 }
