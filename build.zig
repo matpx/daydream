@@ -48,9 +48,9 @@ pub fn build(b: *std.Build) !void {
 
         const compiler_args: []const []const u8 =
             if (optimize == std.builtin.OptimizeMode.Debug)
-            compiler_args_common ++ .{"-D_LIBCPP_ENABLE_DEBUG_MODE"}
+            compiler_args_common ++ .{ "-D_LIBCPP_ENABLE_DEBUG_MODE", "-D_GLIBCXX_DEBUG" }
         else
-            compiler_args_common ++ .{"-D_LIBCPP_ENABLE_ASSERTIONS"};
+            compiler_args_common ++ .{ "-D_LIBCPP_ENABLE_ASSERTIONS", "-D_GLIBCXX_ASSERTIONS" };
 
         const source_files: []const []const u8 = &.{
             "src/main.cpp",
