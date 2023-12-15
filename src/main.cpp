@@ -10,20 +10,20 @@
 
 namespace dd {
 
-void init() {
+static void init() {
     log(LogServerity::DEBUG, "Debug Mode!");
     APP = new App();
 }
 
-void frame() {
+static void frame() {
     APP->renderer->begin_frame();
 
     APP->renderer->end_fram();
 }
 
-void cleanup() { delete APP; }
+static void cleanup() { delete APP; }
 
-void event(const sapp_event *event) {
+static void event(const sapp_event *event) {
     if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&
         event->key_code == SAPP_KEYCODE_ESCAPE) {
         sapp_request_quit();
@@ -33,7 +33,6 @@ void event(const sapp_event *event) {
 } // namespace dd
 
 sapp_desc sokol_main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
-
     return {
         .init_cb = dd::init,
         .frame_cb = dd::frame,

@@ -47,6 +47,7 @@ pub fn build(b: *std.Build) !void {
             "-ftrivial-auto-var-init=zero",
             "-fPIE",
             "-fcf-protection=full",
+            "-Wa,--noexecstack",
             // "-fstack-clash-protection",
         };
 

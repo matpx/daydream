@@ -127,7 +127,7 @@ struct is_trivially_copy_constructible<std::vector<T, A>> : std::false_type {};
 #endif
 
 namespace tl {
-template <class T, class E> class expected;
+template <class T, class E> class [[nodiscard]] expected;
 
 #ifndef TL_MONOSTATE_INPLACE_MUTEX
 #define TL_MONOSTATE_INPLACE_MUTEX
