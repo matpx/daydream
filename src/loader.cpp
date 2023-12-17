@@ -27,7 +27,7 @@ static tl::expected<tl::monostate, std::string> parse_prim(const cgltf_primitive
     }
 
     for(cgltf_size i_component = 0; i_component < pos_attribute.data->count; i_component++) {
-        std::array<float, 3> vertex_pos;
+        std::array<float, 3> vertex_pos = {};
 
         if(!cgltf_accessor_read_float(pos_attribute.data, i_component, vertex_pos.data(), vertex_pos.size())) {
             return tl::make_unexpected("cgltf failed to read position component");
@@ -45,11 +45,11 @@ static tl::expected<tl::monostate, std::string> parse_prim(const cgltf_primitive
     return {};
 }
 
-void parse_node(const cgltf_node& node) {
-    for(gsl::not_null<const cgltf_node* const> child : std::span<cgltf_node*>(node.children, node.children_count)) {
-        parse_node(*child);
-    } 
-}
+// static void parse_node(const cgltf_node& node) {
+//     for(gsl::not_null<const cgltf_node* const> child : std::span<cgltf_node*>(node.children, node.children_count)) {
+//         parse_node(*child);
+//     } 
+// }
 
 tl::expected<tl::monostate, std::string> load_gltf() {
     const cgltf_options options = {};
