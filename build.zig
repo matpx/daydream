@@ -44,11 +44,7 @@ pub fn build(b: *std.Build) !void {
             "-Wno-c++98-compat-pedantic",
             "-Wno-c++98-compat",
             "-fstrict-flex-arrays=3",
-            "-ftrivial-auto-var-init=zero",
             "-fPIE",
-            "-fcf-protection=full",
-            "-Wa,--noexecstack",
-            // "-fstack-clash-protection",
         };
 
         const compiler_args: []const []const u8 =
@@ -58,6 +54,10 @@ pub fn build(b: *std.Build) !void {
             compiler_args_common ++ .{
                 "-D_LIBCPP_ENABLE_ASSERTIONS",
                 "-D_GLIBCXX_ASSERTIONS",
+                "-fcf-protection=full",
+                "-Wa,--noexecstack",
+                "-ftrivial-auto-var-init=zero",
+                // "-fstack-clash-protection",
             }
         else
             compiler_args_common;
