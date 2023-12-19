@@ -43,6 +43,7 @@ pub fn build(b: *std.Build) !void {
             "-Wno-missing-prototypes",
             "-Wno-c++98-compat-pedantic",
             "-Wno-c++98-compat",
+            "-Wno-padded",
             "-fstrict-flex-arrays=3",
             "-fPIE",
         };

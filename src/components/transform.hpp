@@ -10,7 +10,7 @@ struct TransformComponent {
    glm::mat4 world;
 
    glm::quat rotation;
-   glm::vec3 position;
+   glm::vec3 translation;
 };
 
 }
