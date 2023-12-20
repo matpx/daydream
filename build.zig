@@ -68,6 +68,7 @@ pub fn build(b: *std.Build) !void {
             "src/main.cpp",
             "src/impl.cpp",
             "src/app.cpp",
+            "src/window.cpp",
             "src/renderer.cpp",
             "src/loader.cpp",
         };
