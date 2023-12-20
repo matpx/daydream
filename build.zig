@@ -20,6 +20,7 @@ pub fn build(b: *std.Build) !void {
     {
         const system_include_paths: []const []const u8 = &.{
             "thirdparty/SDL2/x86_64-w64-mingw32/include/",
+            "thirdparty/nvrhi/include",
             "thirdparty/sokol/",
             "thirdparty/glm/",
             "thirdparty/entt/src/",
@@ -80,6 +81,43 @@ pub fn build(b: *std.Build) !void {
     }
 
     {
+        const source_files: []const []const u8 = &.{
+            "./thirdparty/nvrhi/src/common/dxgi-format.cpp",
+            "./thirdparty/nvrhi/src/common/format-info.cpp",
+            "./thirdparty/nvrhi/src/common/misc.cpp",
+            "./thirdparty/nvrhi/src/common/sparse-bitset.cpp",
+            "./thirdparty/nvrhi/src/common/state-tracking.cpp",
+            "./thirdparty/nvrhi/src/common/utils.cpp",
+            "./thirdparty/nvrhi/src/d3d11/d3d11-buffer.cpp",
+            "./thirdparty/nvrhi/src/d3d11/d3d11-commandlist.cpp",
+            "./thirdparty/nvrhi/src/d3d11/d3d11-compute.cpp",
+            "./thirdparty/nvrhi/src/d3d11/d3d11-constants.cpp",
+            "./thirdparty/nvrhi/src/d3d11/d3d11-device.cpp",
+            "./thirdparty/nvrhi/src/d3d11/d3d11-graphics.cpp",
+            "./thirdparty/nvrhi/src/d3d11/d3d11-queries.cpp",
+            "./thirdparty/nvrhi/src/d3d11/d3d11-resource-bindings.cpp",
+            "./thirdparty/nvrhi/src/d3d11/d3d11-shader.cpp",
+            "./thirdparty/nvrhi/src/d3d11/d3d11-texture.cpp",
+            "./thirdparty/nvrhi/src/validation/validation-commandlist.cpp",
+            "./thirdparty/nvrhi/src/validation/validation-device.cpp",
+        };
+
+        const nvrhi = b.addStaticLibrary(.{
+            .name = "nvrhi",
+            .target = target,
+            .optimize = optimize,
+        });
+
+        const compiler_args: []const []const u8 = &.{};
+
+        nvrhi.addCSourceFiles(source_files, compiler_args);
+        nvrhi.addIncludePath(std.Build.LazyPath{ .path = "./thirdparty/nvrhi/include" });
+        nvrhi.linkLibC();
+        nvrhi.linkLibCpp();
+        exe.linkLibrary(nvrhi);
+    }
+
+    {
         const system_libs: []const []const u8 = if (exe.target.isWindows())
             &.{
                 "gdi32",
@@ -89,6 +127,7 @@ pub fn build(b: *std.Build) !void {
                 "imm32",
                 "oleaut32",
                 "version",
+                "d3d11",
             }
         else
             &.{};

@@ -7,7 +7,7 @@
 namespace dd {
 
 App::App()
-    : window(std::make_unique<Window>()), renderer(std::make_unique<Renderer>()), loader(std::make_unique<Loader>()),
+    : window(std::make_unique<Window>()), renderer(std::make_unique<Renderer>(*window)), loader(std::make_unique<Loader>()),
       world(std::make_unique<World>()){};
 
 void App::run() {
