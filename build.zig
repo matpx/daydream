@@ -1,11 +1,11 @@
 const std = @import("std");
 
-fn source_pair_needs_update(infile_path: []const u8, outfile_path: []const u8) !bool {
-    const infile = try std.fs.cwd().openFile(infile_path, .{});
-    const outfile = std.fs.cwd().openFile(outfile_path, .{}) catch return true;
+// fn source_pair_needs_update(infile_path: []const u8, outfile_path: []const u8) !bool {
+//     const infile = try std.fs.cwd().openFile(infile_path, .{});
+//     const outfile = std.fs.cwd().openFile(outfile_path, .{}) catch return true;
 
-    return (try infile.metadata()).accessed() > (try outfile.metadata()).accessed();
-}
+//     return (try infile.metadata()).accessed() > (try outfile.metadata()).accessed();
+// }
 
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
@@ -19,6 +19,7 @@ pub fn build(b: *std.Build) !void {
 
     {
         const system_include_paths: []const []const u8 = &.{
+            "thirdparty/SDL2/x86_64-w64-mingw32/include/",
             "thirdparty/sokol/",
             "thirdparty/glm/",
             "thirdparty/entt/src/",
@@ -80,18 +81,16 @@ pub fn build(b: *std.Build) !void {
     {
         const system_libs: []const []const u8 = if (exe.target.isWindows())
             &.{
-                "kernel32",
-                "user32",
                 "gdi32",
                 "ole32",
+                "setupapi",
+                "winmm",
+                "imm32",
+                "oleaut32",
+                "version",
             }
         else
-            &.{
-                "X11",
-                "Xi",
-                "Xcursor",
-                "GL",
-            };
+            &.{};
 
         for (system_libs) |lib| {
             exe.linkSystemLibrary(lib);
@@ -99,33 +98,38 @@ pub fn build(b: *std.Build) !void {
     }
 
     {
-        const shaderc: []const u8 = if (exe.target.isWindows())
-            "./toolchain/sokol-tools-bin/bin/win32/sokol-shdc.exe"
-        else
-            "./toolchain/sokol-tools-bin/bin/linux/sokol-shdc";
-
-        const shaders: []const []const u8 = &.{
-            "unlit",
-        };
-
-        const shader_indir = "shader/";
-        const shader_outdir = "shader/include/shader/";
-
-        for (shaders) |shader| {
-            var infile_buffer = [_]u8{undefined} ** 256;
-            var outfile_buffer = [_]u8{undefined} ** 256;
-
-            const infile_path = try std.fmt.bufPrint(&infile_buffer, shader_indir ++ "{s}.glsl", .{shader});
-            const outfile_path = try std.fmt.bufPrint(&outfile_buffer, shader_outdir ++ "{s}.h", .{shader});
-
-            if (try source_pair_needs_update(infile_path, outfile_path)) {
-                const infile_arg = try std.fmt.bufPrint(&infile_buffer, "--input=" ++ shader_indir ++ "{s}.glsl", .{shader});
-                const outfile_arg = try std.fmt.bufPrint(&outfile_buffer, "--output=" ++ shader_outdir ++ "{s}.h", .{shader});
-
-                exe.step.dependOn(&b.addSystemCommand(&.{ shaderc, infile_arg, outfile_arg, "--slang=glsl330" }).step);
-            }
-        }
+        exe.addObjectFile(std.Build.LazyPath{ .path = "./thirdparty/SDL2/x86_64-w64-mingw32/lib/libSDL2.a" });
+        exe.addObjectFile(std.Build.LazyPath{ .path = "./thirdparty/SDL2/x86_64-w64-mingw32/lib/libSDL2main.a" });
     }
+
+    // {
+    //     const shaderc: []const u8 = if (exe.target.isWindows())
+    //         "./toolchain/sokol-tools-bin/bin/win32/sokol-shdc.exe"
+    //     else
+    //         "./toolchain/sokol-tools-bin/bin/linux/sokol-shdc";
+
+    //     const shaders: []const []const u8 = &.{
+    //         "unlit",
+    //     };
+
+    //     const shader_indir = "shader/";
+    //     const shader_outdir = "shader/include/shader/";
+
+    //     for (shaders) |shader| {
+    //         var infile_buffer = [_]u8{undefined} ** 256;
+    //         var outfile_buffer = [_]u8{undefined} ** 256;
+
+    //         const infile_path = try std.fmt.bufPrint(&infile_buffer, shader_indir ++ "{s}.glsl", .{shader});
+    //         const outfile_path = try std.fmt.bufPrint(&outfile_buffer, shader_outdir ++ "{s}.h", .{shader});
+
+    //         if (try source_pair_needs_update(infile_path, outfile_path)) {
+    //             const infile_arg = try std.fmt.bufPrint(&infile_buffer, "--input=" ++ shader_indir ++ "{s}.glsl", .{shader});
+    //             const outfile_arg = try std.fmt.bufPrint(&outfile_buffer, "--output=" ++ shader_outdir ++ "{s}.h", .{shader});
+
+    //             exe.step.dependOn(&b.addSystemCommand(&.{ shaderc, infile_arg, outfile_arg, "--slang=glsl330" }).step);
+    //         }
+    //     }
+    // }
 
     exe.linkLibC();
     exe.linkLibCpp();
