@@ -50,9 +50,8 @@ static tl::expected<MeshComponent, std::string> parse_prim(gsl::not_null<std::sh
     };
 
     for (cgltf_size i_index = 0; i_index < prim.indices->count; i_index++) {
-        const index_t index = static_cast<uint32_t>(cgltf_accessor_read_index(prim.indices, i_index));
-
-        mesh_data->index_data.push_back(base_vertex + index);
+        mesh_data->index_data.push_back(base_vertex +
+                                        static_cast<uint32_t>(cgltf_accessor_read_index(prim.indices, i_index)));
     }
 
     mesh_component.element_count = static_cast<uint32_t>(mesh_data->index_data.size()) - mesh_component.element_offset;
