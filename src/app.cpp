@@ -15,6 +15,11 @@ void App::run() {
         if (window->poll()) {
             return;
         }
+
+        renderer->begin_frame();
+        renderer->end_fram();
+
+        window->present();
     }
 }
 

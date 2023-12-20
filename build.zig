@@ -38,8 +38,8 @@ pub fn build(b: *std.Build) !void {
     {
         const compiler_args_common: []const []const u8 = &.{
             "-std=c++20",
-            "-fno-exceptions",
-            "-fno-rtti",
+            // "-fno-exceptions",
+            // "-fno-rtti",
             "-Werror",
             "-Weverything",
             "-Wno-missing-prototypes",
