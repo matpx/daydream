@@ -1,8 +1,0 @@
-.git/
-zig-*
-ext/SPIRV-Cross/reference
-ext/SPIRV-Cross/shaders*
-ext/SPIRV-Cross/test*
-ext/SPIRV-Tools/test/
-ext/glslang/Test/
-

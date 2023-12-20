@@ -82,24 +82,24 @@ pub fn build(b: *std.Build) !void {
 
     {
         const source_files: []const []const u8 = &.{
-            "./thirdparty/nvrhi/src/common/dxgi-format.cpp",
-            "./thirdparty/nvrhi/src/common/format-info.cpp",
-            "./thirdparty/nvrhi/src/common/misc.cpp",
-            "./thirdparty/nvrhi/src/common/sparse-bitset.cpp",
-            "./thirdparty/nvrhi/src/common/state-tracking.cpp",
-            "./thirdparty/nvrhi/src/common/utils.cpp",
-            "./thirdparty/nvrhi/src/d3d11/d3d11-buffer.cpp",
-            "./thirdparty/nvrhi/src/d3d11/d3d11-commandlist.cpp",
-            "./thirdparty/nvrhi/src/d3d11/d3d11-compute.cpp",
-            "./thirdparty/nvrhi/src/d3d11/d3d11-constants.cpp",
-            "./thirdparty/nvrhi/src/d3d11/d3d11-device.cpp",
-            "./thirdparty/nvrhi/src/d3d11/d3d11-graphics.cpp",
-            "./thirdparty/nvrhi/src/d3d11/d3d11-queries.cpp",
-            "./thirdparty/nvrhi/src/d3d11/d3d11-resource-bindings.cpp",
-            "./thirdparty/nvrhi/src/d3d11/d3d11-shader.cpp",
-            "./thirdparty/nvrhi/src/d3d11/d3d11-texture.cpp",
-            "./thirdparty/nvrhi/src/validation/validation-commandlist.cpp",
-            "./thirdparty/nvrhi/src/validation/validation-device.cpp",
+            "thirdparty/nvrhi/src/common/dxgi-format.cpp",
+            "thirdparty/nvrhi/src/common/format-info.cpp",
+            "thirdparty/nvrhi/src/common/misc.cpp",
+            "thirdparty/nvrhi/src/common/sparse-bitset.cpp",
+            "thirdparty/nvrhi/src/common/state-tracking.cpp",
+            "thirdparty/nvrhi/src/common/utils.cpp",
+            "thirdparty/nvrhi/src/d3d11/d3d11-buffer.cpp",
+            "thirdparty/nvrhi/src/d3d11/d3d11-commandlist.cpp",
+            "thirdparty/nvrhi/src/d3d11/d3d11-compute.cpp",
+            "thirdparty/nvrhi/src/d3d11/d3d11-constants.cpp",
+            "thirdparty/nvrhi/src/d3d11/d3d11-device.cpp",
+            "thirdparty/nvrhi/src/d3d11/d3d11-graphics.cpp",
+            "thirdparty/nvrhi/src/d3d11/d3d11-queries.cpp",
+            "thirdparty/nvrhi/src/d3d11/d3d11-resource-bindings.cpp",
+            "thirdparty/nvrhi/src/d3d11/d3d11-shader.cpp",
+            "thirdparty/nvrhi/src/d3d11/d3d11-texture.cpp",
+            "thirdparty/nvrhi/src/validation/validation-commandlist.cpp",
+            "thirdparty/nvrhi/src/validation/validation-device.cpp",
         };
 
         const nvrhi = b.addStaticLibrary(.{
@@ -111,10 +111,12 @@ pub fn build(b: *std.Build) !void {
         const compiler_args: []const []const u8 = &.{};
 
         nvrhi.addCSourceFiles(source_files, compiler_args);
-        nvrhi.addIncludePath(std.Build.LazyPath{ .path = "./thirdparty/nvrhi/include" });
+        nvrhi.addIncludePath(std.Build.LazyPath{ .path = "thirdparty/nvrhi/include" });
         nvrhi.linkLibC();
         nvrhi.linkLibCpp();
         exe.linkLibrary(nvrhi);
+
+        exe.step.dependOn(&b.addSystemCommand(&.{ "toolchain/ShaderMake/ShaderMake.exe", "-p", "DXBC", "--header", "-c", "shader/shadermake.cfg", "--compiler", "toolchain/ShaderMake/fxc.exe", "-o", "toolchain-out/shader/" }).step);
     }
 
     {
@@ -138,15 +140,15 @@ pub fn build(b: *std.Build) !void {
     }
 
     {
-        exe.addObjectFile(std.Build.LazyPath{ .path = "./thirdparty/SDL2/x86_64-w64-mingw32/lib/libSDL2.a" });
-        exe.addObjectFile(std.Build.LazyPath{ .path = "./thirdparty/SDL2/x86_64-w64-mingw32/lib/libSDL2main.a" });
+        exe.addObjectFile(std.Build.LazyPath{ .path = "thirdparty/SDL2/x86_64-w64-mingw32/lib/libSDL2.a" });
+        exe.addObjectFile(std.Build.LazyPath{ .path = "thirdparty/SDL2/x86_64-w64-mingw32/lib/libSDL2main.a" });
     }
 
     // {
     //     const shaderc: []const u8 = if (exe.target.isWindows())
-    //         "./toolchain/sokol-tools-bin/bin/win32/sokol-shdc.exe"
+    //         "toolchain/sokol-tools-bin/bin/win32/sokol-shdc.exe"
     //     else
-    //         "./toolchain/sokol-tools-bin/bin/linux/sokol-shdc";
+    //         "toolchain/sokol-tools-bin/bin/linux/sokol-shdc";
 
     //     const shaders: []const []const u8 = &.{
     //         "unlit",

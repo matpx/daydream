@@ -1,5 +1,5 @@
 /.cache
 /build
+/toolchain-out
 /zig-out
 /zig-cache
-/shader/include/shader/*.h
