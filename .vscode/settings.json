@@ -1,13 +1,14 @@
 {
   "clangd.fallbackFlags": [
     "-isystem${workspaceFolder}/thirdparty/SDL2/x86_64-w64-mingw32/include/",
+    "-isystem${workspaceFolder}/thirdparty/nvrhi/include",
+    "-isystem${workspaceFolder}/thirdparty/JoltPhysics",
     "-isystem${workspaceFolder}/thirdparty/glm/",
     "-isystem${workspaceFolder}/thirdparty/entt/src/",
     "-isystem${workspaceFolder}/thirdparty/fmt/include/",
     "-isystem${workspaceFolder}/thirdparty/GSL/include/",
     "-isystem${workspaceFolder}/thirdparty/expected/include/",
     "-isystem${workspaceFolder}/thirdparty/cgltf/",
-    "-isystem${workspaceFolder}/thirdparty/nvrhi/include",
     "-std=c++20",
     "-fno-exceptions",
     "-fno-rtti",
