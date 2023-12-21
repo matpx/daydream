@@ -36,7 +36,7 @@ static tl::expected<MeshComponent, std::string> parse_prim(gsl::not_null<std::sh
         }
 
         mesh_data->vertex_data.push_back({
-            .pos = vertex_pos,
+            .position = vertex_pos,
         });
     }
 

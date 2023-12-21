@@ -9,7 +9,7 @@
 namespace dd {
 
 struct Vertex {
-        std::array<float, 3> pos;
+        std::array<float, 3> position;
 };
 
 using index_t = uint32_t;

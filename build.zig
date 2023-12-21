@@ -163,13 +163,13 @@ pub fn build(b: *std.Build) !void {
             "thirdparty/SDL2/x86_64-w64-mingw32/include/",
             "thirdparty/nvrhi/include",
             "thirdparty/JoltPhysics/",
-            "thirdparty/sokol/",
             "thirdparty/glm/",
             "thirdparty/entt/src/",
             "thirdparty/fmt/include/",
             "thirdparty/GSL/include/",
             "thirdparty/expected/include/",
             "thirdparty/cgltf/",
+            "toolchain-out/",
         };
 
         for (system_include_paths) |include_path| {
@@ -261,39 +261,39 @@ pub fn build(b: *std.Build) !void {
         exe.step.dependOn(&b.addSystemCommand(&.{ "toolchain/ShaderMake/ShaderMake.exe", "-p", "DXBC", "--header", "-c", "shader/shadermake.cfg", "--compiler", "toolchain/ShaderMake/fxc.exe", "-o", "toolchain-out/shader/" }).step);
     }
 
-    {
-        const jolt = b.addStaticLibrary(.{
-            .name = "jolt",
-            .target = target,
-            .optimize = optimize,
-        });
+    // {
+    //     const jolt = b.addStaticLibrary(.{
+    //         .name = "jolt",
+    //         .target = target,
+    //         .optimize = optimize,
+    //     });
 
-        const compiler_args: []const []const u8 = &.{
-            // "-DJPH_PROFILE_ENABLED",
-            // "-DJPH_EXTERNAL_PROFILE",
-            // "-DJPH_DEBUG_RENDERER",
-            // "-DJPH_DISABLE_TEMP_ALLOCATOR",
-            // "-DJPH_DISABLE_CUSTOM_ALLOCATOR",
-            // "-DJPH_FLOATING_POINT_EXCEPTIONS_ENABLED",
-            // "-DJPH_CROSS_PLATFORM_DETERMINISTIC",
-            // "-DJPH_DOUBLE_PRECISION",
-            // "-DJPH_USE_SSE4_1",
-            // "-DJPH_USE_SSE4_2",
-            // "-DJPH_USE_F16C",
-            // "-DJPH_USE_LZCNT",
-            // "-DJPH_USE_TZCNT",
-            // "-DJPH_USE_AVX",
-            // "-DJPH_USE_AVX2",
-            // "-DJPH_USE_AVX512",
-            // "-DJPH_USE_FMADD",
-        };
+    //     const compiler_args: []const []const u8 = &.{
+    //         // "-DJPH_PROFILE_ENABLED",
+    //         // "-DJPH_EXTERNAL_PROFILE",
+    //         // "-DJPH_DEBUG_RENDERER",
+    //         // "-DJPH_DISABLE_TEMP_ALLOCATOR",
+    //         // "-DJPH_DISABLE_CUSTOM_ALLOCATOR",
+    //         // "-DJPH_FLOATING_POINT_EXCEPTIONS_ENABLED",
+    //         // "-DJPH_CROSS_PLATFORM_DETERMINISTIC",
+    //         // "-DJPH_DOUBLE_PRECISION",
+    //         // "-DJPH_USE_SSE4_1",
+    //         // "-DJPH_USE_SSE4_2",
+    //         // "-DJPH_USE_F16C",
+    //         // "-DJPH_USE_LZCNT",
+    //         // "-DJPH_USE_TZCNT",
+    //         // "-DJPH_USE_AVX",
+    //         // "-DJPH_USE_AVX2",
+    //         // "-DJPH_USE_AVX512",
+    //         // "-DJPH_USE_FMADD",
+    //     };
 
-        jolt.addCSourceFiles(jolt_src, compiler_args);
-        jolt.addIncludePath(std.Build.LazyPath{ .path = "thirdparty/JoltPhysics/" });
-        jolt.linkLibC();
-        jolt.linkLibCpp();
-        exe.linkLibrary(jolt);
-    }
+    //     jolt.addCSourceFiles(jolt_src, compiler_args);
+    //     jolt.addIncludePath(std.Build.LazyPath{ .path = "thirdparty/JoltPhysics/" });
+    //     jolt.linkLibC();
+    //     jolt.linkLibCpp();
+    //     exe.linkLibrary(jolt);
+    // }
 
     {
         const system_libs: []const []const u8 = if (exe.target.isWindows())
