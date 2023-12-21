@@ -18,8 +18,6 @@ void App::run() {
 
         renderer->begin_frame();
         renderer->end_fram();
-
-        window->present();
     }
 }
 

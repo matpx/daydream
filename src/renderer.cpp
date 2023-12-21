@@ -4,7 +4,6 @@
 #include <nvrhi/d3d11.h>
 #include <nvrhi/utils.h>
 #include <nvrhi/validation.h>
-#include <stdint.h>
 
 #include "shader/unlit_main_ps.dxbc.h"
 #include "shader/unlit_main_vs.dxbc.h"
@@ -18,11 +17,34 @@ class MessageCallback : public nvrhi::IMessageCallback {
 };
 
 Renderer::Renderer(Window &window) {
+    const std::pair<uint32_t, uint32_t> window_size = window.get_width_height();
+
+    DXGI_SWAP_CHAIN_DESC swap_chain_desc;
+
+    ZeroMemory(&swap_chain_desc, sizeof(DXGI_SWAP_CHAIN_DESC));
+
+    swap_chain_desc.BufferCount = 1;
+    swap_chain_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    swap_chain_desc.BufferDesc.Width = window_size.first;
+    swap_chain_desc.BufferDesc.Height = window_size.second;
+    swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swap_chain_desc.OutputWindow = window.get_hwnd();
+    swap_chain_desc.SampleDesc.Count = 1;
+    swap_chain_desc.Windowed = TRUE;
+
+    HRESULT result = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0,
+                                                   D3D11_SDK_VERSION, &swap_chain_desc, &d3d11_swapchain, &d3d11_device,
+                                                   nullptr, &d3d11_device_context);
+    Ensures(!FAILED(result));
+
+    result = d3d11_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID *>(&d3d11_backbuffer));
+    Ensures(!FAILED(result));
+
     [[clang::no_destroy]] static MessageCallback message_callback;
 
     nvrhi::d3d11::DeviceDesc device_desc = {
         .messageCallback = static_cast<nvrhi::IMessageCallback *>(&message_callback),
-        .context = window.get_d3d11_device_context(),
+        .context = d3d11_device_context,
     };
 
     nvrhi_device = nvrhi::d3d11::createDevice(device_desc);
@@ -30,8 +52,6 @@ Renderer::Renderer(Window &window) {
 #ifndef NDEBUG
     nvrhi_device = nvrhi::validation::createValidationLayer(nvrhi_device);
 #endif
-
-    std::pair<uint32_t, uint32_t> window_size = window.get_width_height();
 
     const auto color_texture_desc = nvrhi::TextureDesc()
                                         .setDimension(nvrhi::TextureDimension::Texture2D)
@@ -41,8 +61,8 @@ Renderer::Renderer(Window &window) {
                                         .setIsRenderTarget(true)
                                         .setDebugName("Swap Chain Image");
 
-    color_attachment_texture = nvrhi_device->createHandleForNativeTexture(
-        nvrhi::ObjectTypes::D3D11_Resource, window.get_d3d11_backbuffer(), color_texture_desc);
+    color_attachment_texture = nvrhi_device->createHandleForNativeTexture(nvrhi::ObjectTypes::D3D11_Resource,
+                                                                          d3d11_backbuffer, color_texture_desc);
 
     const auto depth_texture_desc = nvrhi::TextureDesc()
                                         .setWidth(window_size.first)
@@ -114,7 +134,12 @@ Renderer::Renderer(Window &window) {
     }
 }
 
-Renderer::~Renderer() {}
+Renderer::~Renderer() {
+    d3d11_backbuffer->Release();
+    d3d11_swapchain->Release();
+    d3d11_device->Release();
+    d3d11_device_context->Release();
+}
 
 void Renderer::begin_frame() {
     nvrhi::CommandListHandle command_list = nvrhi_device->createCommandList();
@@ -179,6 +204,8 @@ void Renderer::end_fram() {
 
         command_list->close();
         nvrhi_device->executeCommandList(command_list);
+
+        d3d11_swapchain->Present(0, 0);
 
         nvrhi_device->runGarbageCollection();
     }

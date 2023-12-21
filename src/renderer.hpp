@@ -4,6 +4,11 @@
 #include "window.hpp"
 #include <nvrhi/nvrhi.h>
 
+class IDXGISwapChain;
+class ID3D11Device;
+class ID3D11DeviceContext;
+class ID3D11Texture2D;
+
 namespace dd {
 
 struct GPUPipeline {
@@ -16,6 +21,11 @@ struct GPUPipeline {
 
 class Renderer final : NoCopy {
     private:
+        ID3D11Device *d3d11_device = nullptr;
+        ID3D11DeviceContext *d3d11_device_context = nullptr;
+        IDXGISwapChain *d3d11_swapchain = nullptr;
+        ID3D11Texture2D *d3d11_backbuffer = nullptr;
+
         nvrhi::DeviceHandle nvrhi_device;
         nvrhi::FramebufferHandle framebuffer;
         nvrhi::TextureHandle color_attachment_texture;
