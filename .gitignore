@@ -1,5 +1,4 @@
 /.cache
-/build
 /toolchain-out
-/zig-out
-/zig-cache
+zig-out
+zig-cache
