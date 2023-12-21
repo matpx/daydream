@@ -73,8 +73,10 @@ pub fn build(b: *std.Build) !void {
             "src/impl.cpp",
             "src/app.cpp",
             "src/window.cpp",
-            "src/renderer.cpp",
+            "src/device.cpp",
             "src/loader.cpp",
+            "src/systems/renderer.cpp",
+            "src/systems/player.cpp",
         };
 
         exe.addCSourceFiles(
@@ -113,7 +115,7 @@ pub fn build(b: *std.Build) !void {
     exe.linkLibrary(nvrhi.package(b, target, optimize));
     exe.step.dependOn(&b.addSystemCommand(&.{ "toolchain/ShaderMake/ShaderMake.exe", "-p", "DXBC", "--header", "-c", "shader/shadermake.cfg", "--compiler", "toolchain/ShaderMake/fxc.exe", "-o", "toolchain-out/shader/" }).step);
 
-    exe.linkLibrary(jolt.package(b, target, optimize));
+    // exe.linkLibrary(jolt.package(b, target, optimize));
 
     // {
     //     const shaderc: []const u8 = if (exe.target.isWindows())

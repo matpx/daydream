@@ -1,4 +1,4 @@
-#include "renderer.hpp"
+#include "device.hpp"
 #include "components/mesh.hpp"
 #include "log.hpp"
 #include <nvrhi/d3d11.h>
@@ -16,7 +16,7 @@ class MessageCallback : public nvrhi::IMessageCallback {
         }
 };
 
-Renderer::Renderer(Window &window) {
+Device::Device(Window &window) {
     const std::pair<uint32_t, uint32_t> window_size = window.get_width_height();
 
     DXGI_SWAP_CHAIN_DESC swap_chain_desc;
@@ -134,14 +134,14 @@ Renderer::Renderer(Window &window) {
     }
 }
 
-Renderer::~Renderer() {
+Device::~Device() {
     d3d11_backbuffer->Release();
     d3d11_swapchain->Release();
     d3d11_device->Release();
     d3d11_device_context->Release();
 }
 
-void Renderer::begin_frame() {
+void Device::begin_frame() {
     nvrhi::CommandListHandle command_list = nvrhi_device->createCommandList();
 
     command_list->open();
@@ -153,7 +153,7 @@ void Renderer::begin_frame() {
     nvrhi_device->executeCommandList(command_list);
 }
 
-void Renderer::end_fram() {
+void Device::end_fram() {
     {
         static const std::array<Vertex, 3> g_Vertices = {Vertex{{0.5f, -0.5f, 0.0f}}, Vertex{{-0.5f, -0.5f, 0.0f}},
                                                          Vertex{{0.0f, 0.5f, 0.0f}}};

@@ -2,10 +2,11 @@
 #include "log.hpp"
 
 #include "loader.hpp"
-#include "renderer.hpp"
+#include "device.hpp"
 #include "window.hpp"
 #include "world.hpp"
-#include <memory>
+#include "systems/renderer.hpp"
+#include "systems/player.hpp"
 
 using namespace dd;
 

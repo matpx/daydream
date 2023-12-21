@@ -1,14 +1,16 @@
 #include "app.hpp"
+#include "device.hpp"
 #include "loader.hpp"
-#include "renderer.hpp"
+#include "systems/player.hpp"
+#include "systems/renderer.hpp"
 #include "window.hpp"
 #include "world.hpp"
 
 namespace dd {
 
 App::App()
-    : window(std::make_unique<Window>()), renderer(std::make_unique<Renderer>(*window)), loader(std::make_unique<Loader>()),
-      world(std::make_unique<World>()){};
+    : window(std::make_unique<Window>()), device(std::make_unique<Device>(*window)), loader(std::make_unique<Loader>()),
+      world(std::make_unique<World>()), renderer(std::make_unique<Renderer>()), player(std::make_unique<Player>()){};
 
 void App::run() {
     for (;;) {
@@ -16,8 +18,8 @@ void App::run() {
             return;
         }
 
-        renderer->begin_frame();
-        renderer->end_fram();
+        device->begin_frame();
+        device->end_fram();
     }
 }
 

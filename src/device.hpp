@@ -19,7 +19,7 @@ struct GPUPipeline {
         nvrhi::GraphicsPipelineHandle graphics_pipeline;
 };
 
-class Renderer final : NoCopy {
+class Device final : NoCopy {
     private:
         ID3D11Device *d3d11_device = nullptr;
         ID3D11DeviceContext *d3d11_device_context = nullptr;
@@ -35,8 +35,8 @@ class Renderer final : NoCopy {
         GPUPipeline unlit_pipeline;
 
     public:
-        Renderer(Window &window);
-        ~Renderer();
+        Device(Window &window);
+        ~Device();
 
         void begin_frame();
         void end_fram();
