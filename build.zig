@@ -1,6 +1,7 @@
 const std = @import("std");
 const nvrhi = @import("thirdparty/nvrhi/build.zig");
 const jolt = @import("thirdparty/JoltPhysics/build.zig");
+const spdlog = @import("thirdparty/spdlog/build.zig");
 
 // fn source_pair_needs_update(infile_path: []const u8, outfile_path: []const u8) !bool {
 //     const infile = try std.fs.cwd().openFile(infile_path, .{});
@@ -51,6 +52,7 @@ pub fn build(b: *std.Build) !void {
             "-Wno-padded",
             "-fstrict-flex-arrays=3",
             "-fPIE",
+            "-DSPDLOG_COMPILED_LIB",
         };
 
         const compiler_args: []const []const u8 =
@@ -112,6 +114,8 @@ pub fn build(b: *std.Build) !void {
         exe.addObjectFile(std.Build.LazyPath{ .path = "thirdparty/SDL2/x86_64-w64-mingw32/lib/libSDL2main.a" });
         // b.installBinFile("thirdparty/SDL2/x86_64-w64-mingw32/bin/SDL2.dll", "SDL2.dll");
     }
+
+    exe.linkLibrary(spdlog.package(b, target, optimize));
 
     exe.linkLibrary(nvrhi.package(b, target, optimize));
     exe.step.dependOn(&b.addSystemCommand(&.{ "toolchain/ShaderMake/ShaderMake.exe", "-p", "DXBC", "--header", "-c", "shader/shadermake.cfg", "--compiler", "toolchain/ShaderMake/fxc.exe", "-o", "toolchain-out/shader/" }).step);
