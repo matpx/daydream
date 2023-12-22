@@ -59,45 +59,47 @@ Device::Device(Window &window) {
 
     init_d3d11_device(window.get_hwnd(), window_size);
 
-    const auto color_texture_desc = nvrhi::TextureDesc()
-                                        .setDimension(nvrhi::TextureDimension::Texture2D)
-                                        .setFormat(nvrhi::Format::RGBA8_UNORM)
-                                        .setWidth(window_size.first)
-                                        .setHeight(window_size.second)
-                                        .setIsRenderTarget(true)
-                                        .setDebugName("Swap Chain Image");
+    {
+        const auto color_texture_desc = nvrhi::TextureDesc()
+                                            .setDimension(nvrhi::TextureDimension::Texture2D)
+                                            .setFormat(nvrhi::Format::RGBA8_UNORM)
+                                            .setWidth(window_size.first)
+                                            .setHeight(window_size.second)
+                                            .setIsRenderTarget(true)
+                                            .setDebugName("Swap Chain Image");
 
-    color_attachment_texture = nvrhi_device->createHandleForNativeTexture(nvrhi::ObjectTypes::D3D11_Resource,
-                                                                          d3d11_backbuffer, color_texture_desc);
+        color_attachment_texture = nvrhi_device->createHandleForNativeTexture(nvrhi::ObjectTypes::D3D11_Resource,
+                                                                              d3d11_backbuffer, color_texture_desc);
 
-    const auto depth_texture_desc = nvrhi::TextureDesc()
-                                        .setWidth(window_size.first)
-                                        .setHeight(window_size.second)
-                                        .setFormat(nvrhi::Format::D24S8)
-                                        .setDimension(nvrhi::TextureDimension::Texture2D)
-                                        .setDebugName("Depth Buffer")
-                                        .setIsRenderTarget(true)
-                                        .setIsUAV(false)
-                                        .setIsTypeless(true)
-                                        .setClearValue(nvrhi::Color(0))
-                                        .setUseClearValue(true)
-                                        .setInitialState(nvrhi::ResourceStates::DepthWrite)
-                                        .setKeepInitialState(true);
+        const auto depth_texture_desc = nvrhi::TextureDesc()
+                                            .setWidth(window_size.first)
+                                            .setHeight(window_size.second)
+                                            .setFormat(nvrhi::Format::D24S8)
+                                            .setDimension(nvrhi::TextureDimension::Texture2D)
+                                            .setDebugName("Depth Buffer")
+                                            .setIsRenderTarget(true)
+                                            .setIsUAV(false)
+                                            .setIsTypeless(true)
+                                            .setClearValue(nvrhi::Color(0))
+                                            .setUseClearValue(true)
+                                            .setInitialState(nvrhi::ResourceStates::DepthWrite)
+                                            .setKeepInitialState(true);
 
-    depth_attachment_texture = nvrhi_device->createTexture(depth_texture_desc);
+        depth_attachment_texture = nvrhi_device->createTexture(depth_texture_desc);
 
-    auto framebuffer_desc = nvrhi::FramebufferDesc()
-                                .addColorAttachment(color_attachment_texture)
-                                .setDepthAttachment(depth_attachment_texture);
+        const auto framebuffer_desc = nvrhi::FramebufferDesc()
+                                          .addColorAttachment(color_attachment_texture)
+                                          .setDepthAttachment(depth_attachment_texture);
 
-    framebuffer = nvrhi_device->createFramebuffer(framebuffer_desc);
+        framebuffer = nvrhi_device->createFramebuffer(framebuffer_desc);
+    }
 
     {
-        auto transform_constant_buffer_desc = nvrhi::BufferDesc()
-                                                  .setByteSize(sizeof(float) * 16) // TODO sizeof(T)
-                                                  .setIsConstantBuffer(true)
-                                                  .setIsVolatile(true)
-                                                  .setMaxVersions(16);
+        const auto transform_constant_buffer_desc = nvrhi::BufferDesc()
+                                                        .setByteSize(sizeof(float) * 16) // TODO sizeof(T)
+                                                        .setIsConstantBuffer(true)
+                                                        .setIsVolatile(true)
+                                                        .setMaxVersions(16);
 
         transform_constant_buffer = nvrhi_device->createBuffer(transform_constant_buffer_desc);
     }
@@ -106,7 +108,7 @@ Device::Device(Window &window) {
         unlit_pipeline.vertex_shader = nvrhi_device->createShader(nvrhi::ShaderDesc(nvrhi::ShaderType::Vertex),
                                                                   g_unlit_main_vs_dxbc, sizeof(g_unlit_main_vs_dxbc));
 
-        nvrhi::VertexAttributeDesc attributes[] = {
+        const nvrhi::VertexAttributeDesc attributes[] = {
             nvrhi::VertexAttributeDesc()
                 .setName("POSITION")
                 .setFormat(nvrhi::Format::RGB32_FLOAT)
@@ -114,27 +116,27 @@ Device::Device(Window &window) {
                 .setElementStride(sizeof(Vertex)),
         };
 
-        nvrhi::InputLayoutHandle input_layout =
+        const nvrhi::InputLayoutHandle input_layout =
             nvrhi_device->createInputLayout(attributes, uint32_t(std::size(attributes)), unlit_pipeline.vertex_shader);
 
         unlit_pipeline.pixel_shader = nvrhi_device->createShader(nvrhi::ShaderDesc(nvrhi::ShaderType::Pixel),
                                                                  g_unlit_main_ps_dxbc, sizeof(g_unlit_main_ps_dxbc));
 
-        auto layout_desc = nvrhi::BindingLayoutDesc()
-                               .setVisibility(nvrhi::ShaderType::All)
-                               .addItem(nvrhi::BindingLayoutItem::VolatileConstantBuffer(0));
+        const auto layout_desc = nvrhi::BindingLayoutDesc()
+                                     .setVisibility(nvrhi::ShaderType::All)
+                                     .addItem(nvrhi::BindingLayoutItem::VolatileConstantBuffer(0));
 
         unlit_pipeline.binding_layout = nvrhi_device->createBindingLayout(layout_desc);
 
-        auto binding_set_desc =
+        const auto binding_set_desc =
             nvrhi::BindingSetDesc().addItem(nvrhi::BindingSetItem::ConstantBuffer(0, transform_constant_buffer));
         unlit_pipeline.binding_set = nvrhi_device->createBindingSet(binding_set_desc, unlit_pipeline.binding_layout);
 
-        auto pipeline_desc = nvrhi::GraphicsPipelineDesc()
-                                 .setInputLayout(input_layout)
-                                 .setVertexShader(unlit_pipeline.vertex_shader)
-                                 .setPixelShader(unlit_pipeline.pixel_shader)
-                                 .addBindingLayout(unlit_pipeline.binding_layout);
+        const auto pipeline_desc = nvrhi::GraphicsPipelineDesc()
+                                       .setInputLayout(input_layout)
+                                       .setVertexShader(unlit_pipeline.vertex_shader)
+                                       .setPixelShader(unlit_pipeline.pixel_shader)
+                                       .addBindingLayout(unlit_pipeline.binding_layout);
 
         unlit_pipeline.graphics_pipeline = nvrhi_device->createGraphicsPipeline(pipeline_desc, framebuffer);
     }

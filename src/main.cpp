@@ -1,8 +1,6 @@
 #include "app.hpp"
 #include "device.hpp"
 #include "loader.hpp"
-#include "systems/player.hpp"
-#include "systems/renderer.hpp"
 #include "window.hpp"
 #include "world.hpp"
 #include <spdlog/spdlog.h>

@@ -8,9 +8,10 @@ namespace dd {
 class World;
 class Device;
 
-class Renderer : NoCopy {
-    public:
-        void update(Device &device, World &world);
-};
-
 } // namespace dd
+
+namespace dd::renderer {
+
+void update(Device &device, World &world);
+
+}

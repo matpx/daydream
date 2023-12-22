@@ -10,7 +10,7 @@ namespace dd {
 
 App::App()
     : window(std::make_unique<Window>()), device(std::make_unique<Device>(*window)), loader(std::make_unique<Loader>()),
-      world(std::make_unique<World>()), renderer(std::make_unique<Renderer>()), player(std::make_unique<Player>()){};
+      world(std::make_unique<World>()){};
 
 void App::run() {
     for (;;) {
@@ -19,7 +19,7 @@ void App::run() {
         }
 
         device->begin_frame();
-        renderer->update(*device, *world);
+        renderer::update(*device, *world);
         device->end_fram();
     }
 }

@@ -3,6 +3,7 @@
 #include <array>
 #include <gsl/pointers>
 #include <memory>
+#include <nvrhi/nvrhi.h>
 #include <stdint.h>
 #include <vector>
 
@@ -18,12 +19,14 @@ struct MeshData {
         std::vector<Vertex> vertex_data;
         std::vector<Index> index_data;
 
-        // buffer
+        nvrhi::BufferHandle vertex_buffer;
+        nvrhi::BufferHandle index_buffer;
 };
 
 struct MeshComponent {
         gsl::not_null<std::shared_ptr<MeshData>> mesh_data;
-        uint32_t element_offset;
+
+        nvrhi::VertexBufferBinding vertex_buffer_binding;
         uint32_t element_count;
 };
 

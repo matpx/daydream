@@ -3,27 +3,64 @@
 #include "../components/transform.hpp"
 #include "../device.hpp"
 #include "../world.hpp"
+#include <memory>
 
-namespace dd {
+namespace dd::renderer {
 
-void Renderer::update(Device &device, World &) {
-    // for (const auto [entity, transform, mesh] : world.view<TransformComponent, MeshComponent>().each()) {
-        static const std::array<Vertex, 3> g_Vertices = {Vertex{{0.5f, -0.5f, 0.0f}}, Vertex{{-0.5f, -0.5f, 0.0f}},
-                                                         Vertex{{0.0f, 0.5f, 0.0f}}};
+void update(Device &device, World &world) {
+    static bool first_run = true;
 
-        auto vertex_buffer_desc = nvrhi::BufferDesc()
-                                      .setByteSize(sizeof(g_Vertices))
-                                      .setIsVertexBuffer(true)
-                                      .setInitialState(nvrhi::ResourceStates::VertexBuffer)
-                                      .setKeepInitialState(true)
-                                      .setDebugName("Vertex Buffer");
+    if (first_run) {
+        std::shared_ptr<MeshData> triangle_data = std::make_shared<MeshData>(MeshData{
+            .vertex_data = {Vertex{{0.5f, -0.5f, 0.0f}}, Vertex{{-0.5f, -0.5f, 0.0f}}, Vertex{{0.0f, 0.5f, 0.0f}}},
+            .index_data = {0, 1, 2},
+        });
 
-        nvrhi::BufferHandle vertex_buffer = device.nvrhi_device->createBuffer(vertex_buffer_desc);
+        MeshComponent triangle_mesh = {
+            .mesh_data = std::move(triangle_data),
+            .vertex_buffer_binding = nvrhi::VertexBufferBinding().setOffset(0).setSlot(0),
+            .element_count = 3,
+        };
 
-        nvrhi::CommandListHandle command_list = device.nvrhi_device->createCommandList();
-        command_list->open();
+        entt::entity triangle_entity = world.create();
+        world.emplace<TransformComponent>(triangle_entity, TransformComponent{});
+        world.emplace<MeshComponent>(triangle_entity, triangle_mesh);
 
-        command_list->writeBuffer(vertex_buffer, g_Vertices.data(), sizeof(g_Vertices));
+        first_run = false;
+    }
+
+    nvrhi::CommandListHandle command_list = device.nvrhi_device->createCommandList();
+    command_list->open();
+
+    for (const auto [entity, transform, mesh] : world.view<TransformComponent, MeshComponent>().each()) {
+        if (mesh.mesh_data->vertex_buffer.Get() == nullptr || mesh.mesh_data->index_buffer.Get() == nullptr) {
+
+            const size_t vertex_buffer_size = mesh.mesh_data->vertex_data.size() * sizeof(Vertex);
+            const auto vertex_buffer_desc = nvrhi::BufferDesc()
+                                                .setByteSize(vertex_buffer_size)
+                                                .setInitialState(nvrhi::ResourceStates::VertexBuffer)
+                                                .setKeepInitialState(true)
+                                                .setIsVertexBuffer(true)
+                                                .setDebugName("Vertex Buffer");
+
+            mesh.mesh_data->vertex_buffer = device.nvrhi_device->createBuffer(vertex_buffer_desc);
+            command_list->writeBuffer(mesh.mesh_data->vertex_buffer, mesh.mesh_data->vertex_data.data(),
+                                      vertex_buffer_size);
+
+            const size_t index_buffer_size = mesh.mesh_data->index_data.size() * sizeof(Index);
+            const auto index_buffer_desc = nvrhi::BufferDesc()
+                                               .setByteSize(index_buffer_size)
+                                               .setInitialState(nvrhi::ResourceStates::IndexBuffer)
+                                               .setKeepInitialState(true)
+                                               .setIsIndexBuffer(true)
+                                               .setDebugName("Index Buffer");
+
+            mesh.mesh_data->index_buffer = device.nvrhi_device->createBuffer(index_buffer_desc);
+            command_list->writeBuffer(mesh.mesh_data->index_buffer, mesh.mesh_data->index_data.data(),
+                                      index_buffer_size);
+
+            mesh.vertex_buffer_binding.setBuffer(mesh.mesh_data->vertex_buffer);
+        }
 
         float mvp[16] = {
             1, 0, 0, 0,
@@ -36,28 +73,22 @@ void Renderer::update(Device &device, World &) {
         };
         command_list->writeBuffer(device.transform_constant_buffer, mvp, sizeof(mvp));
 
-        nvrhi::VertexBufferBinding vertex_buffer_binding = {
-            .buffer = vertex_buffer,
-            .slot = 0,
-            .offset = 0,
-        };
-
-        auto graphicsState = nvrhi::GraphicsState()
+        const auto graphicsState = nvrhi::GraphicsState()
                                  .setPipeline(device.unlit_pipeline.graphics_pipeline)
                                  .setFramebuffer(device.framebuffer)
                                  .setViewport(nvrhi::ViewportState().addViewportAndScissorRect(nvrhi::Viewport(
                                      static_cast<float>(device.framebuffer->getFramebufferInfo().width),
                                      static_cast<float>(device.framebuffer->getFramebufferInfo().height))))
                                  .addBindingSet(device.unlit_pipeline.binding_set)
-                                 .addVertexBuffer(vertex_buffer_binding);
+                                 .addVertexBuffer(mesh.vertex_buffer_binding);
         command_list->setGraphicsState(graphicsState);
 
-        auto draw_arguments = nvrhi::DrawArguments().setVertexCount(std::size(g_Vertices));
+        const auto draw_arguments = nvrhi::DrawArguments().setVertexCount(mesh.element_count);
         command_list->draw(draw_arguments);
+    }
 
-        command_list->close();
-        device.nvrhi_device->executeCommandList(command_list);
-    // }
+    command_list->close();
+    device.nvrhi_device->executeCommandList(command_list);
 }
 
-} // namespace dd
+} // namespace dd::renderer

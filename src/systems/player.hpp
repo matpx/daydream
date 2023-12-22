@@ -4,6 +4,4 @@
 
 namespace dd {
 
-class Player : NoCopy {};
-
 } // namespace dd
