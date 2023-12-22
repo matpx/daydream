@@ -6,7 +6,6 @@
     "-isystem${workspaceFolder}/thirdparty/JoltPhysics",
     "-isystem${workspaceFolder}/thirdparty/glm/",
     "-isystem${workspaceFolder}/thirdparty/entt/src/",
-    "-isystem${workspaceFolder}/thirdparty/fmt/include/",
     "-isystem${workspaceFolder}/thirdparty/GSL/include/",
     "-isystem${workspaceFolder}/thirdparty/expected/include/",
     "-isystem${workspaceFolder}/thirdparty/cgltf/",

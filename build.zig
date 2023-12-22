@@ -27,7 +27,6 @@ pub fn build(b: *std.Build) !void {
             "thirdparty/JoltPhysics/",
             "thirdparty/glm/",
             "thirdparty/entt/src/",
-            "thirdparty/fmt/include/",
             "thirdparty/GSL/include/",
             "thirdparty/expected/include/",
             "thirdparty/cgltf/",
