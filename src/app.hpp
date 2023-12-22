@@ -17,8 +17,7 @@ class App final : NoCopy {
         gsl::not_null<std::unique_ptr<Window>> window;
         gsl::not_null<std::unique_ptr<Device>> device;
         gsl::not_null<std::unique_ptr<Loader>> loader;
-
-        gsl::not_null<std::shared_ptr<World>> world;
+        gsl::not_null<std::unique_ptr<World>> world;
         
         gsl::not_null<std::unique_ptr<Renderer>> renderer;
         gsl::not_null<std::unique_ptr<Player>> player;

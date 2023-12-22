@@ -147,8 +147,6 @@ pub fn build(b: *std.Build) !void {
     //     }
     // }
 
-    exe.linkLibC();
-    exe.linkLibCpp();
     exe.pie = true;
     exe.link_z_relro = true;
     // exe.want_lto = false; // https://github.com/ziglang/zig/issues/15958

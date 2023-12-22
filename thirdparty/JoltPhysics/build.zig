@@ -174,7 +174,6 @@ pub fn package(
 
     jolt.addCSourceFiles(jolt_source_files, compiler_args);
     jolt.addIncludePath(std.Build.LazyPath{ .path = "thirdparty/JoltPhysics/" });
-    jolt.linkLibC();
     jolt.linkLibCpp();
     return jolt;
 }

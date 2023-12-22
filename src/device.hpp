@@ -26,14 +26,16 @@ class Device final : NoCopy {
         IDXGISwapChain *d3d11_swapchain = nullptr;
         ID3D11Texture2D *d3d11_backbuffer = nullptr;
 
+    public:
         nvrhi::DeviceHandle nvrhi_device;
-        nvrhi::FramebufferHandle framebuffer;
         nvrhi::TextureHandle color_attachment_texture;
         nvrhi::TextureHandle depth_attachment_texture;
+        nvrhi::FramebufferHandle framebuffer;
         nvrhi::BufferHandle transform_constant_buffer;
 
         GPUPipeline unlit_pipeline;
 
+    private:
         void init_d3d11_device(HWND hwnd, std::pair<uint32_t, uint32_t> window_size);
 
     public:

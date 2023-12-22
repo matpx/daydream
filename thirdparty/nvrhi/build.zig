@@ -36,7 +36,6 @@ pub fn package(
 
     nvrhi.addCSourceFiles(nvrhi_source_files, compiler_args);
     nvrhi.addIncludePath(std.Build.LazyPath{ .path = "thirdparty/nvrhi/include" });
-    nvrhi.linkLibC();
     nvrhi.linkLibCpp();
 
     return nvrhi;
