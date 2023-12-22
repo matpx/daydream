@@ -1,6 +1,7 @@
 #include "device.hpp"
 #include "components/mesh.hpp"
 #include "fatal.hpp"
+#include "util.hpp"
 #include <nvrhi/d3d11.h>
 #include <nvrhi/utils.h>
 #include <nvrhi/validation.h>
@@ -30,13 +31,28 @@ void Device::init_d3d11_device(HWND hwnd, const std::pair<uint32_t, uint32_t> wi
                                                    nullptr, &d3d11_device_context);
     ensure_or_fatal(!FAILED(result), "D3D11CreateDeviceAndSwapChain() failed");
 
-    result = d3d11_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID *>(&d3d11_backbuffer));
+    NOWARN("-Wlanguage-extension-token", {
+        result =
+            d3d11_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID *>(&d3d11_backbuffer));
+    })
+
     ensure_or_fatal(!FAILED(result), "d3d11_swapchain->GetBuffer() failed");
 
     class MessageCallback : public nvrhi::IMessageCallback {
         public:
             virtual void message([[maybe_unused]] nvrhi::MessageSeverity severity, const char *messageText) override {
-                spdlog::info("NHRHI: {}", messageText);
+                switch (severity) {
+                case nvrhi::MessageSeverity::Info:
+                    spdlog::info("NHRHI: {}", messageText);
+                    break;
+                case nvrhi::MessageSeverity::Warning:
+                    spdlog::warn("NHRHI: {}", messageText);
+                    break;
+                case nvrhi::MessageSeverity::Error:
+                case nvrhi::MessageSeverity::Fatal:
+                    spdlog::error("NHRHI: {}", messageText);
+                    break;
+                }
             }
     };
 

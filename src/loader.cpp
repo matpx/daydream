@@ -1,11 +1,10 @@
 #include "loader.hpp"
 #include "cgltf.h"
+#include "util.hpp"
 #include <gsl/util>
 #include <memory>
 #include <stdint.h>
 #include <tl/expected.hpp>
-
-#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
 
 namespace dd {
 
@@ -65,12 +64,17 @@ static void parse_node(Prefab &prefab, const std::unordered_map<std::uintptr_t, 
     Prefab::Node prefab_node = {};
 
     if (node.has_translation) {
-        prefab_node.transform.translation = glm::vec3(node.translation[0], node.translation[1], node.translation[2]);
+        NOWARN("-Wunsafe-buffer-usage", {
+            prefab_node.transform.translation =
+                glm::vec3(node.translation[0], node.translation[1], node.translation[2]);
+        })
     }
 
     if (node.has_rotation) {
-        prefab_node.transform.rotation =
-            glm::quat(node.rotation[3], node.rotation[0], node.rotation[1], node.rotation[2]);
+        NOWARN("-Wunsafe-buffer-usage", {
+            prefab_node.transform.rotation =
+                glm::quat(node.rotation[3], node.rotation[0], node.rotation[1], node.rotation[2]);
+        })
     }
 
     if (node.mesh) {
