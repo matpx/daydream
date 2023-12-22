@@ -1,20 +1,15 @@
 #include "device.hpp"
 #include "components/mesh.hpp"
-#include "log.hpp"
+#include "fatal.hpp"
 #include <nvrhi/d3d11.h>
 #include <nvrhi/utils.h>
 #include <nvrhi/validation.h>
+#include <spdlog/spdlog.h>
 
 #include "shader/unlit_main_ps.dxbc.h"
 #include "shader/unlit_main_vs.dxbc.h"
 
 namespace dd {
-
-class MessageCallback : public nvrhi::IMessageCallback {
-        virtual void message([[maybe_unused]] nvrhi::MessageSeverity severity, const char *messageText) override {
-            log(LogServerity::INFO, "NHRHI: {}", messageText);
-        }
-};
 
 Device::Device(Window &window) {
     const std::pair<uint32_t, uint32_t> window_size = window.get_width_height();
@@ -35,10 +30,17 @@ Device::Device(Window &window) {
     HRESULT result = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0,
                                                    D3D11_SDK_VERSION, &swap_chain_desc, &d3d11_swapchain, &d3d11_device,
                                                    nullptr, &d3d11_device_context);
-    Ensures(!FAILED(result));
+    ensure_or_fatal(!FAILED(result), "D3D11CreateDeviceAndSwapChain() failed");
 
     result = d3d11_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID *>(&d3d11_backbuffer));
-    Ensures(!FAILED(result));
+    ensure_or_fatal(!FAILED(result), "d3d11_swapchain->GetBuffer() failed");
+
+    class MessageCallback : public nvrhi::IMessageCallback {
+        public:
+            virtual void message([[maybe_unused]] nvrhi::MessageSeverity severity, const char *messageText) override {
+                spdlog::info("NHRHI: {}", messageText);
+            }
+    };
 
     [[clang::no_destroy]] static MessageCallback message_callback;
 

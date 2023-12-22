@@ -1,7 +1,7 @@
 #include "window.hpp"
 
 #include <SDL2/SDL.h>
-#include <gsl/util>
+#include "fatal.hpp"
 
 namespace dd {
 
@@ -12,7 +12,7 @@ Window::Window() {
 
     sdl_window = SDL_CreateWindow("game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, 0);
 
-    Ensures(sdl_window);
+    ensure_or_fatal(sdl_window, "SDL_CreateWindow() failed");
 }
 
 Window::~Window() {

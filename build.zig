@@ -22,6 +22,7 @@ pub fn build(b: *std.Build) !void {
     {
         const system_include_paths: []const []const u8 = &.{
             "thirdparty/SDL2/x86_64-w64-mingw32/include/",
+            "thirdparty/spdlog/include",
             "thirdparty/nvrhi/include",
             "thirdparty/JoltPhysics/",
             "thirdparty/glm/",
@@ -70,6 +71,7 @@ pub fn build(b: *std.Build) !void {
 
         const source_files: []const []const u8 = &.{
             "src/main.cpp",
+            "src/fatal.cpp",
             "src/impl.cpp",
             "src/app.cpp",
             "src/window.cpp",

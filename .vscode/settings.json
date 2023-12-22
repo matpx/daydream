@@ -1,6 +1,7 @@
 {
   "clangd.fallbackFlags": [
     "-isystem${workspaceFolder}/thirdparty/SDL2/x86_64-w64-mingw32/include/",
+    "-isystem${workspaceFolder}/thirdparty/spdlog/include",
     "-isystem${workspaceFolder}/thirdparty/nvrhi/include",
     "-isystem${workspaceFolder}/thirdparty/JoltPhysics",
     "-isystem${workspaceFolder}/thirdparty/glm/",
