@@ -154,8 +154,7 @@ void Device::begin_frame() {
 
     command_list->open();
     nvrhi::utils::ClearColorAttachment(command_list, framebuffer, 0, nvrhi::Color(0.1f, 0.1f, 0.1f, 1.0f));
-    command_list->clearDepthStencilTexture(framebuffer->getDesc().depthAttachment.texture,
-                                           framebuffer->getDesc().depthAttachment.subresources, true, 1.0f, true, 0.0f);
+    nvrhi::utils::ClearDepthStencilAttachment(command_list, framebuffer, 1.0f, 0.0f);
     command_list->close();
 
     nvrhi_device->executeCommandList(command_list);
