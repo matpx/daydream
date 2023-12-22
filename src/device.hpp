@@ -34,6 +34,8 @@ class Device final : NoCopy {
 
         GPUPipeline unlit_pipeline;
 
+        void init_d3d11_device(HWND hwnd, std::pair<uint32_t, uint32_t> window_size);
+
     public:
         Device(Window &window);
         ~Device();

@@ -11,9 +11,7 @@
 
 namespace dd {
 
-Device::Device(Window &window) {
-    const std::pair<uint32_t, uint32_t> window_size = window.get_width_height();
-
+void Device::init_d3d11_device(HWND hwnd, const std::pair<uint32_t, uint32_t> window_size) {
     DXGI_SWAP_CHAIN_DESC swap_chain_desc;
 
     ZeroMemory(&swap_chain_desc, sizeof(DXGI_SWAP_CHAIN_DESC));
@@ -23,7 +21,7 @@ Device::Device(Window &window) {
     swap_chain_desc.BufferDesc.Width = window_size.first;
     swap_chain_desc.BufferDesc.Height = window_size.second;
     swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swap_chain_desc.OutputWindow = window.get_hwnd();
+    swap_chain_desc.OutputWindow = hwnd;
     swap_chain_desc.SampleDesc.Count = 1;
     swap_chain_desc.Windowed = TRUE;
 
@@ -54,6 +52,12 @@ Device::Device(Window &window) {
 #ifndef NDEBUG
     nvrhi_device = nvrhi::validation::createValidationLayer(nvrhi_device);
 #endif
+}
+
+Device::Device(Window &window) {
+    const std::pair<uint32_t, uint32_t> window_size = window.get_width_height();
+
+    init_d3d11_device(window.get_hwnd(), window_size);
 
     const auto color_texture_desc = nvrhi::TextureDesc()
                                         .setDimension(nvrhi::TextureDimension::Texture2D)
@@ -156,61 +160,59 @@ void Device::begin_frame() {
 }
 
 void Device::end_fram() {
-    {
-        static const std::array<Vertex, 3> g_Vertices = {Vertex{{0.5f, -0.5f, 0.0f}}, Vertex{{-0.5f, -0.5f, 0.0f}},
-                                                         Vertex{{0.0f, 0.5f, 0.0f}}};
+    static const std::array<Vertex, 3> g_Vertices = {Vertex{{0.5f, -0.5f, 0.0f}}, Vertex{{-0.5f, -0.5f, 0.0f}},
+                                                     Vertex{{0.0f, 0.5f, 0.0f}}};
 
-        auto vertex_buffer_desc = nvrhi::BufferDesc()
-                                      .setByteSize(sizeof(g_Vertices))
-                                      .setIsVertexBuffer(true)
-                                      .setInitialState(nvrhi::ResourceStates::VertexBuffer)
-                                      .setKeepInitialState(true)
-                                      .setDebugName("Vertex Buffer");
+    auto vertex_buffer_desc = nvrhi::BufferDesc()
+                                  .setByteSize(sizeof(g_Vertices))
+                                  .setIsVertexBuffer(true)
+                                  .setInitialState(nvrhi::ResourceStates::VertexBuffer)
+                                  .setKeepInitialState(true)
+                                  .setDebugName("Vertex Buffer");
 
-        nvrhi::BufferHandle vertex_buffer = nvrhi_device->createBuffer(vertex_buffer_desc);
+    nvrhi::BufferHandle vertex_buffer = nvrhi_device->createBuffer(vertex_buffer_desc);
 
-        nvrhi::CommandListHandle command_list = nvrhi_device->createCommandList();
-        command_list->open();
+    nvrhi::CommandListHandle command_list = nvrhi_device->createCommandList();
+    command_list->open();
 
-        command_list->writeBuffer(vertex_buffer, g_Vertices.data(), sizeof(g_Vertices));
+    command_list->writeBuffer(vertex_buffer, g_Vertices.data(), sizeof(g_Vertices));
 
-        float mvp[16] = {
-            1, 0, 0, 0,
+    float mvp[16] = {
+        1, 0, 0, 0,
 
-            0, 1, 0, 0,
+        0, 1, 0, 0,
 
-            0, 0, 1, 0,
+        0, 0, 1, 0,
 
-            0, 0, 0, 1,
-        };
-        command_list->writeBuffer(transform_constant_buffer, mvp, sizeof(mvp));
+        0, 0, 0, 1,
+    };
+    command_list->writeBuffer(transform_constant_buffer, mvp, sizeof(mvp));
 
-        nvrhi::VertexBufferBinding vertex_buffer_binding = {
-            .buffer = vertex_buffer,
-            .slot = 0,
-            .offset = 0,
-        };
+    nvrhi::VertexBufferBinding vertex_buffer_binding = {
+        .buffer = vertex_buffer,
+        .slot = 0,
+        .offset = 0,
+    };
 
-        auto graphicsState = nvrhi::GraphicsState()
-                                 .setPipeline(unlit_pipeline.graphics_pipeline)
-                                 .setFramebuffer(framebuffer)
-                                 .setViewport(nvrhi::ViewportState().addViewportAndScissorRect(
-                                     nvrhi::Viewport(static_cast<float>(framebuffer->getFramebufferInfo().width),
-                                                     static_cast<float>(framebuffer->getFramebufferInfo().height))))
-                                 .addBindingSet(unlit_pipeline.binding_set)
-                                 .addVertexBuffer(vertex_buffer_binding);
-        command_list->setGraphicsState(graphicsState);
+    auto graphicsState = nvrhi::GraphicsState()
+                             .setPipeline(unlit_pipeline.graphics_pipeline)
+                             .setFramebuffer(framebuffer)
+                             .setViewport(nvrhi::ViewportState().addViewportAndScissorRect(
+                                 nvrhi::Viewport(static_cast<float>(framebuffer->getFramebufferInfo().width),
+                                                 static_cast<float>(framebuffer->getFramebufferInfo().height))))
+                             .addBindingSet(unlit_pipeline.binding_set)
+                             .addVertexBuffer(vertex_buffer_binding);
+    command_list->setGraphicsState(graphicsState);
 
-        auto draw_arguments = nvrhi::DrawArguments().setVertexCount(std::size(g_Vertices));
-        command_list->draw(draw_arguments);
+    auto draw_arguments = nvrhi::DrawArguments().setVertexCount(std::size(g_Vertices));
+    command_list->draw(draw_arguments);
 
-        command_list->close();
-        nvrhi_device->executeCommandList(command_list);
+    command_list->close();
+    nvrhi_device->executeCommandList(command_list);
 
-        d3d11_swapchain->Present(0, 0);
+    d3d11_swapchain->Present(0, 0);
 
-        nvrhi_device->runGarbageCollection();
-    }
+    nvrhi_device->runGarbageCollection();
 }
 
 } // namespace dd

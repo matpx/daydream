@@ -12,11 +12,11 @@ struct Vertex {
         std::array<float, 3> position;
 };
 
-using index_t = uint32_t;
+using Index = uint32_t;
 
 struct MeshData {
         std::vector<Vertex> vertex_data;
-        std::vector<index_t> index_data;
+        std::vector<Index> index_data;
 
         // buffer
 };
