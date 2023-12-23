@@ -22,7 +22,6 @@
 
 #include "d3d11-backend.h"
 #include <nvrhi/utils.h>
-#include "polyfill.h"
 
 namespace nvrhi::d3d11
 {

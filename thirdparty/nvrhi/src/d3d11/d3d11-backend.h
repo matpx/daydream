@@ -27,6 +27,7 @@
 #include "../common/dxgi-format.h"
 
 #include <d3d11_1.h>
+#include "d3d11-missing.h"
 #include <map>
 #include <vector>
 

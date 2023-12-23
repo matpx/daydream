@@ -25,7 +25,6 @@
 #include <nvrhi/utils.h>
 #include <sstream>
 #include <iomanip>
-#include "polyfill.h"
 
 namespace nvrhi::d3d11
 {
