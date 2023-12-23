@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const jolt_sources_dir = "thirdparty/JoltPhysics/Jolt";
+const jolt_sources_dir = "thirdparty/JoltPhysics/Jolt/";
 
 const jolt_source_files = &.{
     jolt_sources_dir ++ "AABBTree/AABBTreeBuilder.cpp",
@@ -142,37 +142,42 @@ const jolt_source_files = &.{
 };
 
 pub fn package(
+    allocator: std.mem.Allocator,
+    compiler_args_global: []const []const u8,
     b: *std.Build,
     target: std.zig.CrossTarget,
     optimize: std.builtin.Mode,
-) *std.Build.CompileStep {
+) !*std.Build.CompileStep {
     const jolt = b.addStaticLibrary(.{
         .name = "jolt",
         .target = target,
         .optimize = optimize,
     });
 
-    const compiler_args: []const []const u8 = &.{
-        // "-DJPH_PROFILE_ENABLED",
-        // "-DJPH_EXTERNAL_PROFILE",
-        // "-DJPH_DEBUG_RENDERER",
-        // "-DJPH_DISABLE_TEMP_ALLOCATOR",
-        // "-DJPH_DISABLE_CUSTOM_ALLOCATOR",
-        // "-DJPH_FLOATING_POINT_EXCEPTIONS_ENABLED",
-        // "-DJPH_CROSS_PLATFORM_DETERMINISTIC",
-        // "-DJPH_DOUBLE_PRECISION",
-        // "-DJPH_USE_SSE4_1",
-        // "-DJPH_USE_SSE4_2",
-        // "-DJPH_USE_F16C",
-        // "-DJPH_USE_LZCNT",
-        // "-DJPH_USE_TZCNT",
-        // "-DJPH_USE_AVX",
-        // "-DJPH_USE_AVX2",
-        // "-DJPH_USE_AVX512",
-        // "-DJPH_USE_FMADD",
-    };
+    // const compiler_args: []const []const u8 = &.{
+    //     // "-DJPH_PROFILE_ENABLED",
+    //     // "-DJPH_EXTERNAL_PROFILE",
+    //     // "-DJPH_DEBUG_RENDERER",
+    //     // "-DJPH_DISABLE_TEMP_ALLOCATOR",
+    //     // "-DJPH_DISABLE_CUSTOM_ALLOCATOR",
+    //     // "-DJPH_FLOATING_POINT_EXCEPTIONS_ENABLED",
+    //     // "-DJPH_CROSS_PLATFORM_DETERMINISTIC",
+    //     // "-DJPH_DOUBLE_PRECISION",
+    //     // "-DJPH_USE_SSE4_1",
+    //     // "-DJPH_USE_SSE4_2",
+    //     // "-DJPH_USE_F16C",
+    //     // "-DJPH_USE_LZCNT",
+    //     // "-DJPH_USE_TZCNT",
+    //     // "-DJPH_USE_AVX",
+    //     // "-DJPH_USE_AVX2",
+    //     // "-DJPH_USE_AVX512",
+    //     // "-DJPH_USE_FMADD",
+    // };
 
-    jolt.addCSourceFiles(jolt_source_files, compiler_args);
+    var compiler_args = std.ArrayList([]const u8).init(allocator);
+    try compiler_args.appendSlice(compiler_args_global);
+
+    jolt.addCSourceFiles(jolt_source_files, compiler_args.items);
     jolt.addIncludePath(std.Build.LazyPath{ .path = "thirdparty/JoltPhysics/" });
     jolt.linkLibCpp();
     return jolt;

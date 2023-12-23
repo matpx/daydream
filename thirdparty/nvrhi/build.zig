@@ -24,19 +24,22 @@ const nvrhi_source_files: []const []const u8 = &.{
 };
 
 pub fn package(
+    allocator: std.mem.Allocator,
+    compiler_args_global: []const []const u8,
     b: *std.Build,
     target: std.zig.CrossTarget,
     optimize: std.builtin.Mode,
-) *std.Build.CompileStep {
+) !*std.Build.CompileStep {
     const nvrhi = b.addStaticLibrary(.{
         .name = "nvrhi",
         .target = target,
         .optimize = optimize,
     });
 
-    const compiler_args: []const []const u8 = &.{};
+    var compiler_args = std.ArrayList([]const u8).init(allocator);
+    try compiler_args.appendSlice(compiler_args_global);
 
-    nvrhi.addCSourceFiles(nvrhi_source_files, compiler_args);
+    nvrhi.addCSourceFiles(nvrhi_source_files, compiler_args.items);
     nvrhi.addIncludePath(std.Build.LazyPath{ .path = "thirdparty/nvrhi/include" });
     nvrhi.linkLibCpp();
 

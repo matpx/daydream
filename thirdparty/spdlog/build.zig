@@ -13,21 +13,25 @@ const spdlog_source_files: []const []const u8 = &.{
 };
 
 pub fn package(
+    allocator: std.mem.Allocator,
+    compiler_args_global: []const []const u8,
     b: *std.Build,
     target: std.zig.CrossTarget,
     optimize: std.builtin.Mode,
-) *std.Build.CompileStep {
+) !*std.Build.CompileStep {
     const spdlog = b.addStaticLibrary(.{
         .name = "spdlog",
         .target = target,
         .optimize = optimize,
     });
 
-    const compiler_args: []const []const u8 = &.{
-        "-DSPDLOG_COMPILED_LIB",
-    };
+    var compiler_args = std.ArrayList([]const u8).init(allocator);
+    try compiler_args.appendSlice(compiler_args_global);
+    try compiler_args.appendSlice(&.{
+        "-DSPDLOG_NO_EXCEPTIONS",
+    });
 
-    spdlog.addCSourceFiles(spdlog_source_files, compiler_args);
+    spdlog.addCSourceFiles(spdlog_source_files, compiler_args.items);
     spdlog.addIncludePath(std.Build.LazyPath{ .path = "thirdparty/spdlog/include" });
     spdlog.linkLibCpp();
 
