@@ -31,8 +31,8 @@ pub fn build(b: *std.Build) !void {
         if (mode_safe) "-ftrivial-auto-var-init=zero" else "",
         if (mode_safe) "-fcf-protection=full" else "",
         if (mode_safe) "-D_LIBCPP_ENABLE_ASSERTIONS" else "",
+        if (mode_safe) "-D_DEBUG" else "",
         if (mode_debug) "-D_LIBCPP_ENABLE_DEBUG_MODE" else "",
-        if (mode_debug) "-D_DEBUG" else "",
         // if (mode_safe) "-fstack-clash-protection" else "",
     };
 
