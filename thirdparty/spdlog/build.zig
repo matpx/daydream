@@ -27,9 +27,7 @@ pub fn package(
 
     var compiler_args = std.ArrayList([]const u8).init(allocator);
     try compiler_args.appendSlice(compiler_args_global);
-    try compiler_args.appendSlice(&.{
-        "-DSPDLOG_NO_EXCEPTIONS",
-    });
+    try compiler_args.append("-DSPDLOG_NO_EXCEPTIONS");
 
     spdlog.addCSourceFiles(spdlog_source_files, compiler_args.items);
     spdlog.addIncludePath(std.Build.LazyPath{ .path = "thirdparty/spdlog/include" });
