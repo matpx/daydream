@@ -4,6 +4,7 @@
 #include "../device.hpp"
 #include "../world.hpp"
 #include <memory>
+#include <spdlog/spdlog.h>
 
 namespace dd::renderer {
 
@@ -34,6 +35,7 @@ void update(Device &device, World &world) {
 
     for (const auto [entity, transform, mesh] : world.view<TransformComponent, MeshComponent>().each()) {
         if (mesh.mesh_data->vertex_buffer.Get() == nullptr || mesh.mesh_data->index_buffer.Get() == nullptr) {
+            spdlog::debug("Uploading mesh");
 
             const size_t vertex_buffer_size = mesh.mesh_data->vertex_data.size() * sizeof(Vertex);
             const auto vertex_buffer_desc = nvrhi::BufferDesc()

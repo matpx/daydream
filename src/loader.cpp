@@ -3,8 +3,6 @@
 #include "util.hpp"
 #include <gsl/util>
 #include <memory>
-#include <stdint.h>
-#include <tl/expected.hpp>
 
 namespace dd {
 
@@ -96,10 +94,8 @@ static void parse_node(Prefab &prefab, const std::unordered_map<std::uintptr_t, 
     prefab.nodes.push_back(prefab_node);
 }
 
-tl::expected<tl::monostate, std::string> load_gltf() {
+tl::expected<PrefabHandle, std::string> Loader::load_gltf(const std::string_view path) {
     const cgltf_options options = {};
-
-    const std::string_view path = "test.glb";
 
     gsl::owner<cgltf_data *> data = nullptr;
 
@@ -131,13 +127,25 @@ tl::expected<tl::monostate, std::string> load_gltf() {
         }
     }
 
-    Prefab prefab;
+    PrefabHandle prefab = std::make_shared<Prefab>();
 
     for (const cgltf_node &node : std::span<cgltf_node>(data->nodes, data->nodes_count)) {
-        parse_node(prefab, mesh_components, node);
+        parse_node(*prefab, mesh_components, node);
     }
 
-    return {};
+    return prefab;
+}
+
+void Loader::instantiate(World &world, const PrefabHandle prefab) {
+    for (Prefab::Node &node : prefab->nodes) {
+        const entt::entity node_entity = world.create();
+
+        world.emplace<TransformComponent>(node_entity, node.transform);
+
+        if (node.mesh.has_value()) {
+            world.emplace<MeshComponent>(node_entity, node.mesh.value());
+        }
+    }
 }
 
 } // namespace dd

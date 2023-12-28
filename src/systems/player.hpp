@@ -1,7 +1,10 @@
 #pragma once
 
+#include "../loader.hpp"
 #include "../nocopy.hpp"
 
-namespace dd {
+namespace dd::player {
 
-} // namespace dd
+void update(World &world, Loader &loader);
+
+} // namespace dd::player

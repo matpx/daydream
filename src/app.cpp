@@ -19,6 +19,7 @@ void App::run() {
         }
 
         device->begin_frame();
+        player::update(*world, *loader);
         renderer::update(*device, *world);
         device->end_fram();
     }

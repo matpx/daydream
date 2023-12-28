@@ -110,7 +110,7 @@ pub fn build(b: *std.Build) !void {
     b.installBinFile("thirdparty/SDL2/x86_64-w64-mingw32/bin/SDL2.dll", "SDL2.dll");
 
     // JoltPhysics
-    exe.linkLibrary(try jolt.package(allocator, compiler_args_global, b, target, optimize));
+    // exe.linkLibrary(try jolt.package(allocator, compiler_args_global, b, target, optimize));
 
     // spdlog
     exe.linkLibrary(try spdlog.package(allocator, compiler_args_global, b, target, optimize));
